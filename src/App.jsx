@@ -3,11 +3,13 @@ import {  Code, Eye, FileText, Settings, AlertCircle, Download, UploadCloud,
   Folder, Loader2, Bug
 } from 'lucide-react';
 import { parseStandaardwerk } from './core/parser';
+// UPDATED: Gebruik de enhanced word parser
 import { parseWordDocument } from './core/enhancedWordParser';
 import { generateTIAPortalXML } from './generator';
 import { exportParsedDocument } from './components/ui/exportManager';
 import { defaultInput, defaultSyntaxRules } from './constants';
 import CodeEditor from './components/CodeEditor';
+// UPDATED: Gebruik de enhanced analysis view
 import AnalysisView from './components/AnalysisView';
 import TiaXmlPreview from './components/TiaXmlPreview';
 import Tab from './components/ui/Tab';
@@ -91,7 +93,7 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
       );
       setRawHtml(html);
 
-      // Parse met enhanced parser
+      // UPDATED: Gebruik enhanced parser
       const result = await parseWordDocument(file, syntaxRules);
       setProjectData(result);
 
@@ -374,7 +376,7 @@ function App() {
           <div>
             <h2 className="text-lg font-semibold mb-2">Handmatige Code Editor</h2>
             <p className="text-sm text-gray-600 mb-4">Deze editor wordt gebruikt als er geen programma uit een Word-document is geselecteerd.</p>
-            <CodeEditor value={input} onChange={setInput} />
+            <CodeEditor input={input} setInput={setInput} />
           </div>
         );
       case 'analysis':

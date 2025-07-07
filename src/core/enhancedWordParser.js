@@ -1,5 +1,4 @@
-// src/core/enhancedWordParser.js
-import * as mammoth from 'mammoth';
+// src/core/enhancedWordParser.js - Schone, werkende versie
 import { buildFolderTree } from './hierarchyBuilder';
 import { parseStandaardwerk } from './parser';
 
@@ -9,8 +8,7 @@ const SYMBOLIK_IDB_REGEX = /Symbolik\s+IDB\s*:\s*(.*)/i;
 const TAG_REGEX = /<(h[1-6]|p)>(.*?)<\/\1>/g;
 
 // Helper: strip HTML tags
-const stripNestedTags = html =>
-  html?.replace(/<[^>]*>?/gm, '') || '';
+const stripNestedTags = html => html?.replace(/<[^>]*>?/gm, '') || '';
 
 // Helper: generate IDB name
 function generateIdbName(programName) {
@@ -25,59 +23,203 @@ function generateIdbName(programName) {
   return name.replace(/[^a-zA-Z0-9_]/g, '') || 'Generated_IDB';
 }
 
-// Helper: converteer Word content naar standaardwerk format
-function convertToStandaardwerkFormat(rawContent, syntaxRules) {
-    const allRestWords = syntaxRules.stepKeywords.rest.map(w => w.toUpperCase());
-    const allStepWords = syntaxRules.stepKeywords.step.map(w => w.toUpperCase());
+// Helper: detecteer variabele type
+function detectVariableType(line) {
+  const trimmed = line.trim();
   
-    const lines = rawContent
-      .split(/\r?\n/)
-      .map(l => l.trim())
-      .filter(Boolean);
-  
-    const outputLines = [];
-    let insideStep = false;
-  
-    for (const line of lines) {
-      const upper = line.toUpperCase();
-  
-      const rustMatch = allRestWords.find(word => upper.startsWith(word));
-      const stepMatch = allStepWords.find(word => upper.startsWith(word));
-  
-      if (rustMatch) {
-        outputLines.push(`\t${line}`); // RUST of IDLE mag ook met tab, blijft apart
-        insideStep = true;
-        continue;
-      }
-  
-      const stepNumberMatch = line.match(new RegExp(`^(${allStepWords.join('|')})\\s+\\d+`, 'i'));
-      if (stepNumberMatch) {
-        outputLines.push(`${line}`); // nieuwe stap, zonder tab
-        insideStep = true;
-        continue;
-      }
-  
-      if (insideStep) {
-        if (line.startsWith('+')) {
-          outputLines.push(`\t${line.trim()}`);
-        } else {
-          outputLines.push(`\t${line}`);
-        }
-      } else {
-        outputLines.push(line);
-      }
-    }
-  
-    return outputLines.join('\n');
+  // Voorwaarde pattern: **naam:**
+  if (/^\*\*([^:*]+):\s*/.test(trimmed)) {
+    const match = /^\*\*([^:*]+):\s*(.*)/.exec(trimmed);
+    return { type: 'voorwaarde', match: match };
   }
   
+  // Storing pattern: **storing:**
+  if (/^\*\*storing:\s*/i.test(trimmed)) {
+    const match = /^\*\*storing:\s*(.*)/.exec(trimmed);
+    return { type: 'storing', match: match };
+  }
+  
+  // Melding pattern: **melding:**
+  if (/^\*\*melding:\s*/i.test(trimmed)) {
+    const match = /^\*\*melding:\s*(.*)/.exec(trimmed);
+    return { type: 'melding', match: match };
+  }
+  
+  // Teller pattern: **teller=**
+  if (/^\*\*teller\s*=?\s*/i.test(trimmed)) {
+    const match = /^\*\*teller\s*=?\s*(.*)/.exec(trimmed);
+    return { type: 'teller', match: match };
+  }
+  
+  // Tijd pattern: tijd ~5sek
+  if (/^tijd\s*~?\s*\d+\s*(sek|min|s|m)/i.test(trimmed)) {
+    const match = /^(tijd\s*~?\s*\d+\s*(?:sek|min|s|m))/i.exec(trimmed);
+    return { type: 'tijd', match: match };
+  }
+  
+  // Variable pattern: naam =
+  if (/^([A-Za-z][A-Za-z0-9_]*)\s*=\s*/.test(trimmed)) {
+    const match = /^([A-Za-z][A-Za-z0-9_]*)\s*=\s*(.*)/.exec(trimmed);
+    return { type: 'variable', match: match };
+  }
+  
+  return { type: 'unknown', match: null };
+}
+
+// Helper: converteer naar standaardwerk format
+function convertToStandaardwerkFormat(rawContent, syntaxRules) {
+  console.log('=== CONVERTING TO STANDAARDWERK ===');
+  console.log('Raw content:', rawContent);
+  
+  const allRestWords = syntaxRules.stepKeywords.rest.map(w => w.toUpperCase());
+  const allStepWords = syntaxRules.stepKeywords.step.map(w => w.toUpperCase());
+
+  const lines = rawContent
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  console.log('Lines to process:', lines.length);
+
+  // Parse structuur
+  const sections = [];
+  let currentSection = null;
+  let pendingConditions = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const upper = line.toUpperCase();
+
+    console.log(`Line ${i}: "${line}"`);
+
+    // Check voor RUST
+    const rustMatch = allRestWords.find(kw => upper.startsWith(kw));
+    if (rustMatch) {
+      console.log('-> RUST detected');
+      // Save vorige sectie
+      if (currentSection && pendingConditions.length > 0) {
+        currentSection.conditions = [...pendingConditions];
+        pendingConditions = [];
+      }
+
+      currentSection = {
+        type: 'RUST',
+        number: 0,
+        description: line.replace(new RegExp(`^${rustMatch}:?\\s*`, 'i'), '').trim(),
+        conditions: []
+      };
+      sections.push(currentSection);
+      continue;
+    }
+
+    // Check voor STAP
+    const stepRegex = new RegExp(`^(${allStepWords.join('|')})\\s+(\\d+):?\\s*(.*)`, 'i');
+    const stepMatch = stepRegex.exec(line);
+    if (stepMatch) {
+      console.log(`-> STAP ${stepMatch[2]} detected`);
+      // Save vorige sectie
+      if (currentSection && pendingConditions.length > 0) {
+        currentSection.conditions = [...pendingConditions];
+        pendingConditions = [];
+      }
+
+      const [, keyword, number, description] = stepMatch;
+      currentSection = {
+        type: 'STAP',
+        number: parseInt(number),
+        description: description.trim(),
+        conditions: []
+      };
+      sections.push(currentSection);
+      continue;
+    }
+
+    // Check voor variabele
+    const varType = detectVariableType(line);
+    if (varType.type !== 'unknown') {
+      console.log(`-> Variable ${varType.type} detected`);
+      // Save vorige sectie
+      if (currentSection && pendingConditions.length > 0) {
+        currentSection.conditions = [...pendingConditions];
+        pendingConditions = [];
+      }
+
+      currentSection = {
+        type: 'variable',
+        variableType: varType.type,
+        name: varType.match ? (varType.match[1] || line) : line,
+        conditions: []
+      };
+      sections.push(currentSection);
+      continue;
+    }
+
+    // Anders: voorwaarde
+    if (line.trim()) {
+      console.log(`-> Condition: ${line.trim()}`);
+      pendingConditions.push(line.trim());
+    }
+  }
+
+  // Save laatste sectie
+  if (currentSection && pendingConditions.length > 0) {
+    currentSection.conditions = [...pendingConditions];
+  }
+
+  console.log('Sections found:', sections.length);
+  console.log('Sections:', sections);
+
+  // Converteer naar standaardwerk format
+  const output = [];
+  
+  for (const section of sections) {
+    if (section.type === 'RUST') {
+      output.push(`RUST: ${section.description}`);
+      // RUST krijgt standaard voorwaarden
+      const stepSections = sections.filter(s => s.type === 'STAP');
+      stepSections.forEach(step => {
+        output.push(`\tNIET Stap[${step.number}]`);
+      });
+    } else if (section.type === 'STAP') {
+      output.push(`STAP ${section.number}: ${section.description}`);
+      // Voeg voorwaarden toe
+      section.conditions.forEach(condition => {
+        const isOr = condition.startsWith('+');
+        if (isOr) {
+          output.push(`\t+ ${condition.substring(1).trim()}`);
+        } else {
+          output.push(`\t${condition}`);
+        }
+      });
+    } else if (section.type === 'variable') {
+      output.push(`${section.name} =`);
+      section.conditions.forEach(condition => {
+        output.push(`\t${condition}`);
+      });
+    }
+  }
+
+  const result = output.join('\n');
+  console.log('Final result:', result);
+  return result;
+}
 
 export async function parseWordDocument(file, syntaxRules) {
+  console.log('=== PARSING WORD DOCUMENT ===');
+  
   const result = {
     hierarchy: null,
     programs: [],
     errors: [],
     warnings: [],
+    statistics: {
+      totalPrograms: 0,
+      totalSteps: 0,
+      totalVariables: 0,
+      totalTimers: 0,
+      totalMarkers: 0,
+      totalStoringen: 0
+    }
   };
 
   const seenFbNumbers = new Set();
@@ -87,47 +229,49 @@ export async function parseWordDocument(file, syntaxRules) {
   const saveCurrentProgram = () => {
     if (!currentProgram) return;
 
+    console.log(`Saving program: ${currentProgram.name}`);
+    console.log(`Raw content length: ${currentProgram.rawContent?.length || 0}`);
+
     try {
-      // Converteer de content naar het juiste format
+      // Converteer content
       const standardwerkContent = convertToStandaardwerkFormat(currentProgram.rawContent, syntaxRules);
+      console.log('Converted content:', standardwerkContent);
       
-      // Parse met de volledige parseStandaardwerk functie
+      // Parse met main parser
       const fullParseResult = parseStandaardwerk(standardwerkContent, syntaxRules);
+      console.log('Parse result:', fullParseResult);
       
-      // Merge de volledige parse resultaten met het programma
+      // Merge resultaten
       currentProgram = {
         ...currentProgram,
-        // Basis info behouden
         name: currentProgram.name,
         type: currentProgram.type,
         fbNumber: currentProgram.fbNumber,
         idbName: currentProgram.idbName || generateIdbName(currentProgram.name),
         
-        // Volledige parse resultaten toevoegen
+        // Parse resultaten
         steps: fullParseResult.steps || [],
         variables: fullParseResult.variables || [],
         timers: fullParseResult.timers || [],
         markers: fullParseResult.markers || [],
         storingen: fullParseResult.storingen || [],
         
-        // Extra info uit parser
         transitionConditions: fullParseResult.transitionConditions || [],
         statistics: fullParseResult.statistics || {},
         
-        // Parse errors/warnings toevoegen aan programma
         errors: fullParseResult.errors || [],
         warnings: fullParseResult.warnings || [],
         
-        // Originele content behouden voor debug
         rawContent: currentProgram.rawContent.trim(),
         processedContent: standardwerkContent,
         
-        // Folder info
         folderPath: currentProgram.path,
         fullTitle: currentProgram.fullTitle
       };
 
-      // Voeg parse errors toe aan globale errors
+      console.log(`Program saved with ${currentProgram.steps.length} steps`);
+      
+      // Voeg parse errors toe
       if (currentProgram.errors.length > 0) {
         result.errors.push(...currentProgram.errors.map(e => ({
           program: currentProgram.name,
@@ -137,8 +281,10 @@ export async function parseWordDocument(file, syntaxRules) {
 
       result.programs.push(currentProgram);
     } catch (e) {
+      console.error(`Error parsing program ${currentProgram.name}:`, e);
       result.warnings.push(`Analysefout in "${currentProgram.name}": ${e.message}`);
-      // Voeg programma toch toe, maar met foutindicatie
+      
+      // Voeg programma toe met fout
       currentProgram.parseError = e.message;
       currentProgram.steps = [];
       currentProgram.variables = [];
@@ -172,7 +318,9 @@ export async function parseWordDocument(file, syntaxRules) {
       options
     );
 
-    // Parse HTML structuur
+    console.log('HTML extracted, length:', html.length);
+
+    // Parse HTML
     const structured = [];
     let m;
     while ((m = TAG_REGEX.exec(html)) !== null) {
@@ -181,6 +329,8 @@ export async function parseWordDocument(file, syntaxRules) {
         content: stripNestedTags(m[2]).trim()
       });
     }
+
+    console.log('Structured elements:', structured.length);
 
     let started = false;
     let collectingContent = false;
@@ -194,6 +344,8 @@ export async function parseWordDocument(file, syntaxRules) {
       const programMatch = txt.match(PROGRAM_TITLE_REGEX);
 
       if (programMatch) {
+        console.log('Found program:', txt);
+        
         // Save vorige programma
         if (currentProgram && contentBuffer.length > 0) {
           currentProgram.rawContent = contentBuffer.join('\n');
@@ -231,22 +383,21 @@ export async function parseWordDocument(file, syntaxRules) {
         seenFbNumbers.add(num);
 
       } else if (collectingContent && item.type === 'p') {
-        // Voeg content toe aan buffer
+        // Voeg content toe
         const lines = txt.split('\n').map(l => l.trim()).filter(l => l);
         
         for (const line of lines) {
-          // Check voor Symbolik IDB
+          // Check voor IDB
           const idbMatch = line.match(SYMBOLIK_IDB_REGEX);
           if (idbMatch && currentProgram) {
             currentProgram.idbName = idbMatch[1].trim();
           }
           
-          // Voeg alle content toe
           contentBuffer.push(line);
         }
       }
 
-      // Update path voor hierarchy
+      // Update path
       if (item.type.startsWith('h')) {
         const lvl = parseInt(item.type[1], 10) - 1;
         if (lvl >= 0 && lvl < currentPath.length) {
@@ -267,7 +418,7 @@ export async function parseWordDocument(file, syntaxRules) {
     // Bouw hierarchy
     result.hierarchy = buildFolderTree(result.programs);
 
-    // Voeg globale statistieken toe
+    // Update statistieken
     result.statistics = {
       totalPrograms: result.programs.length,
       totalSteps: result.programs.reduce((sum, p) => sum + (p.steps?.length || 0), 0),
@@ -277,36 +428,14 @@ export async function parseWordDocument(file, syntaxRules) {
       totalStoringen: result.programs.reduce((sum, p) => sum + (p.storingen?.length || 0), 0),
     };
 
+    console.log('=== FINAL RESULT ===');
+    console.log('Programs found:', result.programs.length);
+    console.log('Total steps:', result.statistics.totalSteps);
+
   } catch (err) {
-    console.error("Parser fout:", err);
-    result.errors.push(`Lezen Word-document mislukt: ${err.message}`);
+    console.error("Parser error:", err);
+    result.errors.push(`Word document parsing failed: ${err.message}`);
   }
 
   return result;
-}
-
-// Enhanced export functie die ook de volledige parse data meeneemt
-export function enrichProgramForExport(program, syntaxRules) {
-  // Als het programma al volledig geparsed is, return as-is
-  if (program.steps && program.steps.length > 0) {
-    return program;
-  }
-
-  // Anders, parse het opnieuw
-  try {
-    const standardwerkContent = convertToStandaardwerkFormat(program.rawContent, syntaxRules);
-    const fullParseResult = parseStandaardwerk(standardwerkContent, syntaxRules);
-    
-    return {
-      ...program,
-      ...fullParseResult,
-      name: program.name,
-      type: program.type,
-      fbNumber: program.fbNumber,
-      idbName: program.idbName
-    };
-  } catch (e) {
-    console.error(`Error parsing program ${program.name}:`, e);
-    return program;
-  }
 }
