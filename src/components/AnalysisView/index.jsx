@@ -108,14 +108,16 @@ const StepCard = ({ step }) => {
       )}
 
       {/* Legacy conditions support */}
-      {safeArray(step?.conditions).length > 0 && !step?.transitionConditions?.length && (
+      {safeArray(step?.conditions).length > 0 && (
         <div className="mt-4">
-          <h5 className="font-medium mb-3 text-gray-600 text-sm">Voorwaarden:</h5>
-          {step.conditions.map((line, index) => (
-            <div key={index} className="font-mono text-sm text-gray-800 p-2 bg-gray-50 rounded mb-1">
-              {line}
-            </div>
-          ))}
+          <h5 className="font-medium mb-3 text-gray-600 text-sm">Voorwaarden binnen stap:</h5>
+          <div className="space-y-1">
+            {safeArray(step?.conditions).map((line, index) => (
+              <div key={index} className="ml-4 p-2 bg-gray-50 border-l-4 border-blue-200 text-sm rounded-r">
+                <span className="font-mono text-gray-800">{line}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
