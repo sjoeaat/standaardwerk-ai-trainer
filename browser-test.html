@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parsing Test</title>
+    <style>
+        body { font-family: monospace; margin: 20px; }
+        .test-section { margin: 20px 0; border: 1px solid #ccc; padding: 15px; }
+        .step { margin: 10px 0; }
+        .condition { margin-left: 20px; color: #666; }
+        .error { color: red; }
+        .warning { color: orange; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Parsing Test Results</h1>
+    <div id="results"></div>
+
+    <script>
+        const testContent = `Hauptprogramm Einfuhr FB100
+Symbolik IDB: Haupt_Einfuhr
+
+RUHE: Hauptprogramm Einfuhr
+- Freigabe Start Einfuhr
+- DT Start Einfuhr
+
+SCHRITT 1: Selektiere 1e zu füllen Horde
+- Horde vorselektiert (Selektionsprogramm Horde für Einfuhr SCHRITT 2+5+8+11)
+
+SCHRITT 2: Warten bis Horde und Einfuhrwagen bereit für Füllen
+- Füllen 1e Horde aktiv:
+  - Füllen Horde aktiv (Füllen Horde N21 SCHRITT 7)
+  - + Füllen Horde aktiv (Füllen Horde N22 SCHRITT 7)
+  - + Füllen Horde aktiv (Füllen Horde N23 SCHRITT 7)
+  - + Füllen Horde aktiv (Füllen Horde N24 SCHRITT 7)
+
+SCHRITT 3: Produktion
+- DT Ende Einfuhr
+- +Ende Produktion (K5 in Ruhe) (Komm. von K5)
+
+SCHRITT 4: Start leerdrehen Einfuhrinne N10/N11
+- Strömung Einfuhrrinne N10/N11: Strömung Einfuhrrinne N10/N11 OK
+- NICHT Staumeldung Einfuhrrinne N10
+- NICHT Staumeldung Einfuhrrinne N11
+- Zeit 10sek ??
+
+SCHRITT 8: Fertig
+- Freigabe Start Einfuhr = RUHE`;
+
+        // Basic step pattern testing
+        function testStepPatterns() {
+            const results = document.getElementById('results');
+            
+            results.innerHTML += '<div class="test-section"><h2>🔍 Step Pattern Recognition Test</h2>';
+            
+            const stepPattern = /^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$/i;
+            const lines = testContent.split('\n');
+            
+            lines.forEach((line, index) => {
+                const trimmed = line.trim();
+                if (trimmed.includes('SCHRITT') || trimmed.includes('RUHE')) {
+                    const match = trimmed.match(stepPattern);
+                    if (match) {
+                        results.innerHTML += `<div class="step success">✅ Line ${index + 1}: "${trimmed}" → ${match[1]} ${match[2] || ''} - ${match[3] || ''}</div>`;
+                    } else {
+                        results.innerHTML += `<div class="step error">❌ Line ${index + 1}: "${trimmed}" - NO MATCH</div>`;
+                    }
+                }
+            });
+            
+            results.innerHTML += '</div>';
+        }
+
+        function testCrossReferences() {
+            const results = document.getElementById('results');
+            
+            results.innerHTML += '<div class="test-section"><h2>🔗 Cross-Reference Pattern Test</h2>';
+            
+            const crossRefPattern = /^(.+?)\s*\(([^)]+)\s+(SCHRITT|STAP|STEP)\s+([0-9+]+)\)\s*$/i;
+            const lines = testContent.split('\n');
+            
+            lines.forEach((line, index) => {
+                const trimmed = line.trim().replace(/^[-+]\s*/, '');
+                if (trimmed.includes('SCHRITT') && trimmed.includes('(')) {
+                    const match = trimmed.match(crossRefPattern);
+                    if (match) {
+                        const steps = match[4].split('+').map(s => parseInt(s.trim()));
+                        results.innerHTML += `<div class="condition success">✅ Line ${index + 1}: "${match[1]}" → Program: "${match[2]}" Steps: [${steps.join(', ')}]</div>`;
+                    } else {
+                        results.innerHTML += `<div class="condition error">❌ Line ${index + 1}: "${trimmed}" - NO CROSS-REF MATCH</div>`;
+                    }
+                }
+            });
+            
+            results.innerHTML += '</div>';
+        }
+
+        function testTimerConditions() {
+            const results = document.getElementById('results');
+            
+            results.innerHTML += '<div class="test-section"><h2>⏰ Timer Pattern Test</h2>';
+            
+            const timerPattern = /(?:TIJD|ZEIT|TIME)\s+(\d+)\s*(Sek|sek|Min|min|s|m)\s*\?\?/i;
+            const lines = testContent.split('\n');
+            
+            lines.forEach((line, index) => {
+                const trimmed = line.trim();
+                if (trimmed.toLowerCase().includes('zeit') || trimmed.toLowerCase().includes('tijd')) {
+                    const match = trimmed.match(timerPattern);
+                    if (match) {
+                        results.innerHTML += `<div class="condition success">✅ Line ${index + 1}: "${trimmed}" → Timer: ${match[1]} ${match[2]}</div>`;
+                    } else {
+                        results.innerHTML += `<div class="condition warning">⚠️ Line ${index + 1}: "${trimmed}" - NO TIMER MATCH</div>`;
+                    }
+                }
+            });
+            
+            results.innerHTML += '</div>';
+        }
+
+        function testVariableAssignments() {
+            const results = document.getElementById('results');
+            
+            results.innerHTML += '<div class="test-section"><h2>📝 Variable Assignment Test</h2>';
+            
+            const lines = testContent.split('\n');
+            
+            lines.forEach((line, index) => {
+                const trimmed = line.trim().replace(/^[-+]\s*/, '');
+                if (trimmed.includes('=')) {
+                    const isAssignment = trimmed.endsWith('=') || trimmed.includes('= ');
+                    if (isAssignment) {
+                        const variableName = trimmed.replace(/\s*=.*$/, '').trim();
+                        const value = trimmed.includes('= ') ? trimmed.split('= ')[1].trim() : 'RUHE';
+                        results.innerHTML += `<div class="condition success">✅ Line ${index + 1}: "${variableName}" = "${value}"</div>`;
+                    }
+                }
+            });
+            
+            results.innerHTML += '</div>';
+        }
+
+        function runAllTests() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="success"><h2>🚀 Starting comprehensive parsing tests...</h2></div>';
+            
+            testStepPatterns();
+            testCrossReferences();
+            testTimerConditions();
+            testVariableAssignments();
+            
+            results.innerHTML += '<div class="test-section success"><h2>✅ All tests completed!</h2><p>Open the browser console for detailed debug output if running the actual app.</p></div>';
+        }
+
+        // Run tests when page loads
+        window.onload = runAllTests;
+    </script>
+</body>
+</html>
