@@ -168,7 +168,17 @@ export class UnifiedTextParser {
    * Normalize step formatting
    */
   normalizeStepFormatting(text) {
-    return text
+    // First, ensure SCHRITT keywords get their own lines by adding line breaks before them
+    let normalized = text
+      // Add line breaks before SCHRITT/STAP/STEP keywords that are not at start of line
+      // Match pattern: (any text) SCHRITT <number>: (rest)
+      .replace(/([^\n]+?)\s+(SCHRITT|STAP|STEP)\s+(\d+)\s*[:.]?\s*([^\n]*)/gmi, (match, before, keyword, number, after) => 
+        `${before.trim()}\n${keyword.toUpperCase()} ${number}: ${after}`)
+      // Add line breaks before RUST/RUHE/IDLE keywords that are not at start of line  
+      .replace(/([^\n]+?)\s+(RUST|RUHE|IDLE)\s*[:.]?\s*([^\n]*)/gmi, (match, before, keyword, after) => 
+        `${before.trim()}\n${keyword.toUpperCase()}: ${after}`);
+
+    return normalized
       // Normalize RUST/RUHE/IDLE - make more flexible
       .replace(/^\s*(RUST|RUHE|IDLE)\s*[:.]?\s*/gmi, (match, keyword) => `${keyword.toUpperCase()}: `)
       // Normalize SCHRITT/STAP/STEP - handle various formats
