@@ -111,13 +111,15 @@ export class EnhancedLogicParser extends LogicParser {
 
     // Check for step declarations
     const stepPattern = new RegExp(
-      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\s+(\d+))?:\s*(.*)$`, 
+      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s+(\\d+))?:\\s*(.*)$`, 
       'i'
     );
     const stepMatch = trimmedLine.match(stepPattern);
     
     if (trimmedLine.toLowerCase().includes('schritt') || trimmedLine.toLowerCase().includes('rust') || trimmedLine.toLowerCase().includes('stap')) {
-      console.log(`🎯 Step pattern:`, stepPattern);
+      console.log(`🎯 Step pattern source:`, stepPattern.source);
+      console.log(`🎯 Testing line: "${trimmedLine}" (length: ${trimmedLine.length})`);
+      console.log(`🎯 Character codes:`, [...trimmedLine].map(c => c.charCodeAt(0)));
       console.log(`🎯 Step match result:`, stepMatch);
     }
 

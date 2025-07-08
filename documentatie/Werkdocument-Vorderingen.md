@@ -34,9 +34,15 @@
 - [x] **Variabele arrays**: `Stap[0..31]`, `Hulp[1..32]`, `Tijd[1..10]`, `Teller[1..10]`
 - [x] **RUST implementatie**: AND blok met alle `NICHT Stap[x]` inputs
 
+#### 1.5 Text Parsing en Normalizatie (COMPLEET)
+- [x] **Duitse tekst parsing**: SCHRITT detectie in embedded contexts
+- [x] **Word document import**: Normalizatie van Word formatting artifacts
+- [x] **Step formatting**: Automatische normalizatie van SCHRITT/RUST patronen
+- [x] **Multi-language support**: German, Dutch, English step keywords
+
 ### 🔄 In Behandeling
 
-#### 1.5 Systematische Regel Doorloop (IN PROGRESS)
+#### 1.6 Systematische Regel Doorloop (IN PROGRESS)
 - [ ] **Complexe voorwaarden**: Geneste logica en operatoren
 - [ ] **Timer implementatie**: `Zeit 10sek ??` patronen
 - [ ] **Fout afhandeling**: Störung en Melding patronen
@@ -57,6 +63,7 @@
 2. **FBD is werkelijkheid**: SR blokken en AND gates zijn echte implementatie
 3. **Impliciete logica**: Veel voorwaarden worden niet geschreven maar wel geprogrammeerd
 4. **Variabele mapping**: Elk type heeft eigen array in FBD
+5. **Text normalizatie**: Consistent parsing vereist pre-processing van input tekst
 
 ---
 
@@ -121,6 +128,7 @@ SCHRITT 2: Warten bis Horde bereit
 2. **Volledigheid**: Alle impliciete voorwaarden documenteren
 3. **Validatie**: FBD moet matchen met beschrijving
 4. **Reviews**: Altijd laten controleren door ervaren programmeur
+5. **Text import**: Word documents vereisen speciale normalizatie voor correcte parsing
 
 ---
 
@@ -139,12 +147,19 @@ SCHRITT 2: Warten bis Horde bereit
 
 ## 7. Changelog
 
-### 2025-07-08
+### 2025-07-08 (Ochtend)
 - **Initiele versie**: Basis document aangemaakt
 - **Concepten**: RUST/SCHRITT logica gedefinieerd
 - **Variabele types**: Hulpmerkers, STORING, MELDING, TIJD, etc.
 - **FBD mapping**: XML analyse voltooid
 - **Voorbeelden**: Basis transitie patronen gedocumenteerd
+
+### 2025-07-08 (Middag)  
+- **Duitse tekst parsing**: Fix voor embedded SCHRITT detectie
+- **Normalizatie verbetering**: Embedded keywords worden correct gesplitst
+- **Test framework**: Duitse sample tekst parsing getest en werkend
+- **Git push**: Fixes gepusht naar repository
+- **Documentatie**: Werkdocument bijgewerkt met parsing vorderingen
 
 ---
 

@@ -168,17 +168,39 @@ export class UnifiedTextParser {
    * Normalize step formatting
    */
   normalizeStepFormatting(text) {
-    // First, ensure SCHRITT keywords get their own lines by adding line breaks before them
-    let normalized = text
-      // Add line breaks before SCHRITT/STAP/STEP keywords that are not at start of line
-      // Match pattern: (any text) SCHRITT <number>: (rest)
-      .replace(/([^\n]+?)\s+(SCHRITT|STAP|STEP)\s+(\d+)\s*[:.]?\s*([^\n]*)/gmi, (match, before, keyword, number, after) => 
-        `${before.trim()}\n${keyword.toUpperCase()} ${number}: ${after}`)
-      // Add line breaks before RUST/RUHE/IDLE keywords that are not at start of line  
-      .replace(/([^\n]+?)\s+(RUST|RUHE|IDLE)\s*[:.]?\s*([^\n]*)/gmi, (match, before, keyword, after) => 
-        `${before.trim()}\n${keyword.toUpperCase()}: ${after}`);
-
-    return normalized
+    // Split into lines to work line by line, avoiding cross-line regex issues
+    const lines = text.split('\n');
+    const normalizedLines = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      
+      // Check if this line contains embedded SCHRITT/STAP/STEP keywords
+      const schrittMatch = line.match(/^(.+?)\s+(SCHRITT|STAP|STEP)\s+(\d+)\s*[:.]?\s*(.*)$/i);
+      if (schrittMatch && !line.trim().startsWith('SCHRITT') && !line.trim().startsWith('STAP') && !line.trim().startsWith('STEP')) {
+        // Split the line: before part + new line with SCHRITT
+        const [, before, keyword, number, after] = schrittMatch;
+        normalizedLines.push(before.trim());
+        normalizedLines.push(`${keyword.toUpperCase()} ${number}: ${after}`);
+        continue;
+      }
+      
+      // Check if this line contains embedded RUST/RUHE/IDLE keywords  
+      const rustMatch = line.match(/^(.+?)\s+(RUST|RUHE|IDLE)\s*[:.]?\s*(.*)$/i);
+      if (rustMatch && !line.trim().startsWith('RUST') && !line.trim().startsWith('RUHE') && !line.trim().startsWith('IDLE')) {
+        // Split the line: before part + new line with RUST
+        const [, before, keyword, after] = rustMatch;
+        normalizedLines.push(before.trim());
+        normalizedLines.push(`${keyword.toUpperCase()}: ${after}`);
+        continue;
+      }
+      
+      // No embedded keywords, keep line as is
+      normalizedLines.push(line);
+    }
+    
+    // Rejoin and apply final normalization
+    return normalizedLines.join('\n')
       // Normalize RUST/RUHE/IDLE - make more flexible
       .replace(/^\s*(RUST|RUHE|IDLE)\s*[:.]?\s*/gmi, (match, keyword) => `${keyword.toUpperCase()}: `)
       // Normalize SCHRITT/STAP/STEP - handle various formats
@@ -192,8 +214,8 @@ export class UnifiedTextParser {
         declaration.toUpperCase())
       // Fix common spacing issues around colons
       .replace(/(\w)\s*:\s*/g, '$1: ')
-      // Remove extra spaces
-      .replace(/\s{2,}/g, ' ');
+      // Remove extra spaces WITHIN lines (preserve newlines)
+      .replace(/ {2,}/g, ' ');
   }
 
   /**
@@ -220,12 +242,12 @@ export class UnifiedTextParser {
       .replace(/:/g, ': ')
       // Fix missing spaces after equals
       .replace(/=/g, ' = ')
-      // Fix double spaces
-      .replace(/\s{2,}/g, ' ')
-      // Fix leading/trailing spaces on lines
+      // Fix leading/trailing spaces on lines first
       .split('\n')
       .map(line => line.trim())
-      .join('\n');
+      .join('\n')
+      // Fix double spaces WITHIN lines (but preserve line breaks)
+      .replace(/ {2,}/g, ' ');
   }
 
   /**
