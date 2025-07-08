@@ -164,15 +164,47 @@ export class EnhancedLogicParser extends LogicParser {
   tryParseCondition(line, lineNumber, currentStep, currentVariableDefinition, pendingConditions) {
     if (!currentStep && !currentVariableDefinition) return false;
 
-    let conditionText = line.trim();
-    const isOr = conditionText.startsWith('+ ');
+    // Check for condition markers (-, +, or indented lines)
+    const trimmedLine = line.trim();
+    const hasIndentation = /^\s+/.test(line);
+    const isConditionLine = trimmedLine.startsWith('-') || trimmedLine.startsWith('+') || 
+                           (hasIndentation && currentStep && trimmedLine.length > 0);
+
+    if (!isConditionLine) return false;
+
+    let conditionText = trimmedLine;
+    
+    // Remove condition markers
+    if (conditionText.startsWith('-')) {
+      conditionText = conditionText.substring(1).trim();
+    }
+    
+    const isOr = conditionText.startsWith('+ ') || trimmedLine.startsWith('+ ');
     if (isOr) {
-      conditionText = conditionText.substring(2).trim();
+      conditionText = conditionText.replace(/^\+\s*/, '').trim();
     }
 
     const isNegated = /^(NIET|NOT|NICHT)\s+/i.test(conditionText);
     if (isNegated) {
       conditionText = conditionText.replace(/^(NIET|NOT|NICHT)\s+/i, '').trim();
+    }
+
+    console.log(`🔍 Parsing condition on line ${lineNumber}: "${conditionText}" (OR: ${isOr}, NOT: ${isNegated})`);
+
+    // Check for variable assignments (ending with =)
+    const isAssignment = conditionText.endsWith('=') || conditionText.includes('= ');
+    if (isAssignment) {
+      console.log(`📝 Found variable assignment: "${conditionText}"`);
+      // This might be a variable definition within a step
+      const variableName = conditionText.replace(/\s*=.*$/, '').trim();
+      if (currentStep && variableName) {
+        currentStep.assignments = currentStep.assignments || [];
+        currentStep.assignments.push({
+          variable: variableName,
+          value: conditionText.includes('= ') ? conditionText.split('= ')[1].trim() : 'RUHE',
+          lineNumber
+        });
+      }
     }
 
     // Parse cross-references to other step programs
@@ -200,8 +232,12 @@ export class EnhancedLogicParser extends LogicParser {
     }
 
     // Timer conditions (Zeit 10sek ??)
-    const timeMatch = conditionText.match(/(?:TIJD|ZEIT|TIME)\s+(\d+)\s*(Sek|Min|s|m)\s*\?\?/i);
+    const timeMatch = conditionText.match(/(?:TIJD|ZEIT|TIME)\s+(\d+)\s*(Sek|sek|Min|min|s|m)\s*\??\??/i);
     const isTimeCondition = !!timeMatch;
+    
+    if (isTimeCondition) {
+      console.log(`⏰ Found timer condition: ${timeMatch[1]} ${timeMatch[2]}`);
+    }
 
     const comparisonMatch = conditionText.match(/^([a-zA-Z0-9_.\[\]]+)\s*(==|!=|<>|>=|<=|>|<)\s*(.+)$/);
     let comparisonData = null;
