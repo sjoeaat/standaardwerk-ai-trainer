@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {  Code, Eye, FileText, Settings, AlertCircle, Download, UploadCloud,
   Folder, Loader2, Bug
 } from 'lucide-react';
-import { parseStandaardwerk } from './core/parser';
+import { StandardWorkParser } from './core/StandardWorkParser';
 // UPDATED: Gebruik de enhanced word parser
 import { parseWordDocument } from './core/enhancedWordParser';
 import { generateTIAPortalXML } from './generator';
@@ -10,7 +10,7 @@ import { exportParsedDocument } from './components/ui/exportManager';
 import { defaultInput, defaultSyntaxRules } from './constants';
 import CodeEditor from './components/CodeEditor';
 // UPDATED: Gebruik de enhanced analysis view
-import AnalysisView from './components/AnalysisView';
+import AnalysisView from './components/AnalysisView/index.jsx';
 import TiaXmlPreview from './components/TiaXmlPreview';
 import Tab from './components/ui/Tab';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -334,7 +334,8 @@ function App() {
         setParseResult(resultFromWord);
       } else {
         try {
-          const result = parseStandaardwerk(input, syntaxRules);
+          const parser = new StandardWorkParser(syntaxRules);
+          const result = parser.parse(input);
           result.statistics = calculateStatistics(result);
           setParseResult(result);
         } catch (error) {

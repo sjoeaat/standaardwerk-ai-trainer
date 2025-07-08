@@ -7,7 +7,7 @@
 
 import * as mammoth from 'mammoth';
 import { buildFolderTree } from './hierarchyBuilder';
-import { parseStandaardwerk } from './parser';
+import { StandardWorkParser } from './StandardWorkParser';
 
 // Regex patterns
 const PROGRAM_TITLE_REGEX = /^(.*?)\s+(FB|FC)(\d+)/i;
@@ -122,8 +122,9 @@ export async function parseWordDocument(file, syntaxRules) {
       // Converteer de content naar het juiste format
       const standardwerkContent = convertToStandaardwerkFormat(currentProgram.rawContent, syntaxRules);
       
-      // Parse met de volledige parseStandaardwerk functie
-      const fullParseResult = parseStandaardwerk(standardwerkContent, syntaxRules);
+      // Parse met de volledige StandardWorkParser
+      const parser = new StandardWorkParser(syntaxRules);
+      const fullParseResult = parser.parse(standardwerkContent);
       
       console.log(`📊 Parse result for ${currentProgram.name}:`, {
         steps: fullParseResult.steps.length,
@@ -356,7 +357,8 @@ export function enrichProgramForExport(program, syntaxRules) {
   // Anders, parse het opnieuw
   try {
     const standardwerkContent = convertToStandaardwerkFormat(program.rawContent, syntaxRules);
-    const fullParseResult = parseStandaardwerk(standardwerkContent, syntaxRules);
+    const parser = new StandardWorkParser(syntaxRules);
+    const fullParseResult = parser.parse(standardwerkContent);
     
     return {
       ...program,

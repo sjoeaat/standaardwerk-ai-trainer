@@ -1,0 +1,21 @@
+export const defaultSyntaxRules = {
+    stepKeywords: {
+        step: ['STAP', 'SCHRITT', 'STEP'],
+        rest: ['RUST', 'RUHE', 'IDLE'],
+        end: ['KLAAR', 'FERTIG', 'END']
+    },
+    variableDetection: {
+        timerKeywords: ['TIJD', 'TIME', 'ZEIT'],
+        markerKeywords: ['MARKER', 'FLAG', 'MERKER'],
+        storingKeywords: ['STORING', 'FAULT', 'STÖRUNG']
+    },
+    conditions: {
+        orPrefix: '+',
+        notPrefix: ['NIET', 'NICHT', 'NOT'],
+        transitionPrefix: '->'
+    },
+    format: {
+        requireColon: true,
+        allowSpaces: true
+    }
+};
