@@ -149,40 +149,61 @@ export class LogicParser {
 
   tryParseStep(line, lineNumber, currentStep, pendingConditions) {
     const trimmedLine = line.trim();
-    const stepPattern = new RegExp(
-      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s+(\\d+))?:\\s*(.*)$`, 
-      'i'
-    );
-    const stepMatch = trimmedLine.match(stepPattern);
-
-    if (stepMatch) {
-      // Finaliseer vorige stap
+    
+    // Check eerst expliciet voor RUST: patroon
+    const rustMatch = trimmedLine.match(/^(RUST|REST|RUHE):\s*(.*)$/i);
+    if (rustMatch) {
       this.finalizeCurrentStep(currentStep, pendingConditions);
-
-      const type = this.syntaxRules.stepKeywords.rest.some(k =>
-        k.toLowerCase() === stepMatch[1].toLowerCase()) ? 'RUST' : 'STAP';
-
+      
       const newStep = {
-        type: type,
-        number: type === 'RUST' ? 0 : parseInt(stepMatch[2]) || 0,
-        description: stepMatch[3] || '',
-        conditions: [], // Simpele flat array voor conditions binnen de stap
-        transitionConditions: [], // Complexere structuur voor transitie logica
+        type: 'RUST',
+        number: 0,
+        description: rustMatch[2] || '',
+        conditions: [],
+        transitionConditions: [],
         timers: [],
         markers: [],
         storingen: [],
         lineNumber,
       };
-
+      
       this.result.steps.push(newStep);
       return true;
     }
+
+    // Dan pas checken voor normale STAP: patroon
+    const stepMatch = trimmedLine.match(/^(STAP|STEP|SCHRITT)\s+(\d+):\s*(.*)$/i);
+    if (stepMatch) {
+      this.finalizeCurrentStep(currentStep, pendingConditions);
+      
+      const newStep = {
+        type: 'STAP',
+        number: parseInt(stepMatch[2]) || 0,
+        description: stepMatch[3] || '',
+        conditions: [],
+        transitionConditions: [],
+        timers: [],
+        markers: [],
+        storingen: [],
+        lineNumber,
+      };
+      
+      this.result.steps.push(newStep);
+      return true;
+    }
+
     return false;
   }
 
   tryParseCondition(line, lineNumber, currentStep, currentVariableDefinition, pendingConditions) {
-    if (!currentStep && !currentVariableDefinition) return false;
-
+    const trimmedLine = line.trim();
+    
+    // Skip als het een STAP of RUST regel lijkt
+    if (/^(STAP|STEP|SCHRITT|RUST|REST|RUHE)[\s:]/.test(trimmedLine)) {
+        return false;
+    }
+    
+    // Parse voorwaarden
     let conditionText = line.trim();
     const isOr = conditionText.startsWith('+ ');
     if (isOr) {
