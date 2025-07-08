@@ -53,6 +53,9 @@ export class UnifiedTextParser {
    * Normalize text format for consistent parsing
    */
   normalizeText(text, source) {
+    console.log(`🔧 Starting normalization for source: ${source}`);
+    console.log(`📝 Original text (first 300 chars):`, text.substring(0, 300));
+    
     let normalized = text;
     
     // Common normalization for both sources
@@ -69,6 +72,8 @@ export class UnifiedTextParser {
     
     // Final consistency checks
     normalized = this.applyConsistencyRules(normalized);
+    
+    console.log(`✅ Normalized text (first 300 chars):`, normalized.substring(0, 300));
     
     return normalized;
   }
@@ -164,14 +169,21 @@ export class UnifiedTextParser {
    */
   normalizeStepFormatting(text) {
     return text
-      // Normalize RUST/RUHE/IDLE
-      .replace(/^\s*(RUST|RUHE|IDLE)\s*:/gmi, (match, keyword) => `${keyword.toUpperCase()}: `)
-      // Normalize SCHRITT/STAP/STEP
-      .replace(/^\s*(SCHRITT|STAP|STEP)\s+(\d+)\s*:/gmi, (match, keyword, number) => 
+      // Normalize RUST/RUHE/IDLE - make more flexible
+      .replace(/^\s*(RUST|RUHE|IDLE)\s*[:.]?\s*/gmi, (match, keyword) => `${keyword.toUpperCase()}: `)
+      // Normalize SCHRITT/STAP/STEP - handle various formats
+      .replace(/^\s*(SCHRITT|STAP|STEP)\s*[-.]?\s*(\d+)\s*[:.]?\s*/gmi, (match, keyword, number) => 
         `${keyword.toUpperCase()} ${number}: `)
+      // Handle step without number (default to 1)
+      .replace(/^\s*(SCHRITT|STAP|STEP)\s*[:.](?!\s*\d)/gmi, (match, keyword) => 
+        `${keyword.toUpperCase()} 1: `)
       // Normalize VON SCHRITT declarations
       .replace(/^\s*(\+?\s*VON\s+(?:SCHRITT|STAP|STEP)\s+\d+)\s*$/gmi, (match, declaration) => 
-        declaration.toUpperCase());
+        declaration.toUpperCase())
+      // Fix common spacing issues around colons
+      .replace(/(\w)\s*:\s*/g, '$1: ')
+      // Remove extra spaces
+      .replace(/\s{2,}/g, ' ');
   }
 
   /**

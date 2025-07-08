@@ -100,7 +100,7 @@ function convertToStandaardwerkFormat(rawContent, syntaxRules) {
   return result;
 }
 
-export async function parseWordDocument(file, syntaxRules) {
+export async function parseWordDocument(file, syntaxRules, existingProgramRegistry = new Map()) {
   console.log('🚀 Starting Word document parsing...');
   
   const result = {
@@ -122,6 +122,12 @@ export async function parseWordDocument(file, syntaxRules) {
     try {
       // Parse met de nieuwe UnifiedTextParser voor consistente verwerking
       const parser = new UnifiedTextParser(syntaxRules, DEFAULT_VALIDATION_RULES);
+      
+      // Register existing programs for cross-reference validation
+      existingProgramRegistry.forEach((program, name) => {
+        parser.registerProgram(name, program);
+      });
+      
       const fullParseResult = parser.parse(currentProgram.rawContent, 'word', {
         programName: currentProgram.name,
         functionBlock: currentProgram.type + currentProgram.fbNumber,

@@ -107,42 +107,9 @@ const WordImportView = ({
         }
       );
       setRawHtml(html);
-      const syntaxRules = {
-        stepDetection: {
-          patterns: [
-            "^SCHRITT\\s+\\d+[:\\.\\-\\s]"
-          ],
-          stripPrefix: true
-        },
-        timerDetection: {
-          patterns: [
-            "\\b(Timer|Zeit|T\\d{1,4})\\b"
-          ]
-        },
-        markerDetection: {
-          patterns: [
-            "\\bM\\d{1,5}(\\.\\d)?\\b",
-            "\\bMB\\d{1,5}\\b",
-            "\\bMerker\\s*\\d{1,5}\\b"
-          ]
-        },
-        storingDetection: {
-          patterns: [
-            "\\bStörung\\b",
-            "\\bFehler\\b",
-            "\\bAlarm\\b"
-          ]
-        },
-        variableDetection: {
-          patterns: [
-            "\\b\\w+(?:\\.\\w+)*(?:\\[\\d+\\])?\\s*(==|=|<>|<|>|<=|>=)\\s*[^\\s\\n]+",
-            "\\b[A-Za-z_]+\\d*(?:\\[[^\\]]+\\])?\\b"
-          ]
-        }
-      };
-      
-      const result = await parseWordDocument(file, syntaxRules);
 
+      // UPDATED: Gebruik enhanced parser met programRegistry
+      const result = await parseWordDocument(file, syntaxRules, programRegistry);
       setProjectData(result);
 
       // ✅ Hier gebruiken we de juiste props

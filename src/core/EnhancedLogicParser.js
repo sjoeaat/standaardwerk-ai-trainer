@@ -86,11 +86,19 @@ export class EnhancedLogicParser extends LogicParser {
   tryParseStep(line, lineNumber, currentStep, pendingConditions) {
     const trimmedLine = line.trim();
     
+    // Debug output for step parsing
+    if (trimmedLine.toLowerCase().includes('schritt') || trimmedLine.toLowerCase().includes('rust') || trimmedLine.toLowerCase().includes('stap')) {
+      console.log(`🔍 Trying to parse step on line ${lineNumber}: "${trimmedLine}"`);
+      console.log(`Available step keywords:`, this.syntaxRules.stepKeywords);
+    }
+    
     // Check for VON SCHRITT declarations (non-sequential transitions)
     const vonSchrittMatch = trimmedLine.match(/^\+?\s*VON\s+(SCHRITT|STAP|STEP)\s+(\d+)\s*$/i);
     if (vonSchrittMatch) {
       const fromStep = parseInt(vonSchrittMatch[2]);
       const isOr = trimmedLine.startsWith('+');
+      
+      console.log(`📝 Found VON SCHRITT: from step ${fromStep}, isOr: ${isOr}`);
       
       // Store this as transition metadata for the next step
       this.pendingTransitions.push({
@@ -107,17 +115,26 @@ export class EnhancedLogicParser extends LogicParser {
       'i'
     );
     const stepMatch = trimmedLine.match(stepPattern);
+    
+    if (trimmedLine.toLowerCase().includes('schritt') || trimmedLine.toLowerCase().includes('rust') || trimmedLine.toLowerCase().includes('stap')) {
+      console.log(`🎯 Step pattern:`, stepPattern);
+      console.log(`🎯 Step match result:`, stepMatch);
+    }
 
     if (stepMatch) {
+      console.log(`✅ Successfully parsed step: ${stepMatch[1]} ${stepMatch[2] || ''} - ${stepMatch[3] || ''}`);
+      
       // Finaliseer vorige stap met zijn conditions
       this.finalizeCurrentStep(currentStep, pendingConditions);
 
       const type = this.syntaxRules.stepKeywords.rest.some(k =>
         k.toLowerCase() === stepMatch[1].toLowerCase()) ? 'RUST' : 'SCHRITT';
 
+      const stepNumber = type === 'RUST' ? 0 : parseInt(stepMatch[2]) || 1; // Default to 1 if no number
+
       const newStep = {
         type: type,
-        number: type === 'RUST' ? 0 : parseInt(stepMatch[2]) || 0,
+        number: stepNumber,
         description: stepMatch[3] || '',
         entryConditions: [], // Conditions to enter this step (from previous steps)
         exitConditions: [], // Conditions to exit this step (stored above next step)
@@ -134,6 +151,7 @@ export class EnhancedLogicParser extends LogicParser {
         this.pendingTransitions = [];
       }
 
+      console.log(`📝 Created step:`, { type, number: stepNumber, description: newStep.description });
       this.result.steps.push(newStep);
       return true;
     }
