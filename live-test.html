@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Parsing Test</title>
+    <style>
+        body { font-family: monospace; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section { margin: 20px 0; border: 1px solid #ddd; padding: 15px; border-radius: 4px; background: #fafafa; }
+        .result { margin: 10px 0; padding: 8px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #b8daff; }
+        textarea { width: 100%; height: 200px; font-family: monospace; border: 1px solid #ccc; padding: 10px; }
+        button { padding: 10px 20px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .steps { margin: 15px 0; }
+        .step { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 10px; margin: 5px 0; }
+        .condition { background: #f1f8e9; border-left: 2px solid #4caf50; padding: 5px; margin: 3px 0 3px 20px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 Live Word Content Parsing Test</h1>
+        
+        <div class="section">
+            <h3>Original Word Content (No Dashes)</h3>
+            <textarea id="wordContent">Hauptprogramm Einfuhr FB100
+Symbolik IDB: Haupt_Einfuhr
+
+RUHE: Hauptprogramm Einfuhr
+Freigabe Start Einfuhr
+DT Start Einfuhr
+
+SCHRITT 1: Selektiere 1e zu füllen Horde
+Horde vorselektiert (Selektionsprogramm Horde für Einfuhr SCHRITT 2+5+8+11)
+
+SCHRITT 2: Warten bis Horde und Einfuhrwagen bereit für Füllen
+Füllen 1e Horde aktiv:
+  Füllen Horde aktiv (Füllen Horde N21 SCHRITT 7)
+  + Füllen Horde aktiv (Füllen Horde N22 SCHRITT 7)
+  + Füllen Horde aktiv (Füllen Horde N23 SCHRITT 7)
+  + Füllen Horde aktiv (Füllen Horde N24 SCHRITT 7)
+
+SCHRITT 3: Produktion
+DT Ende Einfuhr
++Ende Produktion (K5 in Ruhe) (Komm. von K5)
+
+SCHRITT 4: Start leerdrehen Einfuhrinne N10/N11
+Strömung Einfuhrrinne N10/N11: Strömung Einfuhrrinne N10/N11 OK
+NICHT Staumeldung Einfuhrrinne N10
+NICHT Staumeldung Einfuhrrinne N11
+Zeit 10sek ??
+
+SCHRITT 8: Fertig
+Freigabe Start Einfuhr = RUHE</textarea>
+            <button onclick="testNewParser()">🧪 Test Enhanced Parser</button>
+            <button onclick="testStepDetection()">🎯 Test Step Detection Only</button>
+            <button onclick="testConditionDetection()">📝 Test Condition Detection Only</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function testStepDetection() {
+            const content = document.getElementById('wordContent').value;
+            const results = document.getElementById('results');
+            
+            results.innerHTML = '<div class="section"><h3>🎯 Step Detection Results</h3>';
+            
+            const lines = content.split('\n');
+            let stepCount = 0;
+            
+            lines.forEach((line, index) => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+                
+                // Test step pattern
+                const stepPattern = /^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$/i;
+                const match = trimmed.match(stepPattern);
+                
+                if (match) {
+                    stepCount++;
+                    const [, keyword, number, description] = match;
+                    results.innerHTML += `<div class="result success">✅ Line ${index + 1}: Found ${keyword.toUpperCase()} ${number || '0'} - "${description}"</div>`;
+                } else if (trimmed.includes('SCHRITT') || trimmed.includes('RUHE')) {
+                    results.innerHTML += `<div class="result error">❌ Line ${index + 1}: Failed to parse "${trimmed}"</div>`;
+                }
+            });
+            
+            results.innerHTML += `<div class="result info">📊 Total steps detected: ${stepCount}</div></div>`;
+        }
+
+        function testConditionDetection() {
+            const content = document.getElementById('wordContent').value;
+            const results = document.getElementById('results');
+            
+            results.innerHTML = '<div class="section"><h3>📝 Condition Detection Results</h3>';
+            
+            const lines = content.split('\n');
+            let currentStep = null;
+            let conditionCount = 0;
+            
+            lines.forEach((line, index) => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+                
+                // Check if this is a step
+                const stepPattern = /^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$/i;
+                const stepMatch = trimmed.match(stepPattern);
+                
+                if (stepMatch) {
+                    currentStep = `${stepMatch[1]} ${stepMatch[2] || '0'}`;
+                    results.innerHTML += `<div class="result info">📍 Current step: ${currentStep}</div>`;
+                    return;
+                }
+                
+                // Enhanced condition detection (same logic as our parser fix)
+                if (currentStep) {
+                    const hasIndentation = /^\s+/.test(line);
+                    const hasExplicitMarkers = trimmed.startsWith('-') || trimmed.startsWith('+');
+                    
+                    // Check for implicit condition indicators
+                    const hasNegation = /^(NIET|NOT|NICHT)\s+/i.test(trimmed);
+                    const hasTimer = /(?:TIJD|ZEIT|TIME)\s+\d+/i.test(trimmed);
+                    const hasAssignment = trimmed.includes('=') && !trimmed.match(/^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)/i);
+                    const hasCrossRef = trimmed.includes('(') && trimmed.includes('SCHRITT');
+                    const hasComparison = /:\s*\w+/.test(trimmed) && !trimmed.includes('SCHRITT');
+                    
+                    const isCondition = hasExplicitMarkers || 
+                                       (hasIndentation && trimmed.length > 0) ||
+                                       (hasNegation || hasTimer || hasAssignment || hasCrossRef || hasComparison);
+                    
+                    if (isCondition) {
+                        conditionCount++;
+                        let indicators = [];
+                        if (hasExplicitMarkers) indicators.push('explicit-markers');
+                        if (hasIndentation) indicators.push('indented');
+                        if (hasNegation) indicators.push('negated');
+                        if (hasTimer) indicators.push('timer');
+                        if (hasAssignment) indicators.push('assignment');
+                        if (hasCrossRef) indicators.push('cross-ref');
+                        if (hasComparison) indicators.push('comparison');
+                        
+                        results.innerHTML += `<div class="result success">✅ Line ${index + 1}: "${trimmed}" → [${indicators.join(', ')}]</div>`;
+                    } else {
+                        results.innerHTML += `<div class="result warning">⚠️ Line ${index + 1}: "${trimmed}" → Not detected as condition</div>`;
+                    }
+                }
+            });
+            
+            results.innerHTML += `<div class="result info">📊 Total conditions detected: ${conditionCount}</div></div>`;
+        }
+
+        function testNewParser() {
+            const content = document.getElementById('wordContent').value;
+            const results = document.getElementById('results');
+            
+            results.innerHTML = '<div class="section"><h3>🧪 Enhanced Parser Simulation</h3>';
+            
+            const lines = content.split('\n');
+            let currentStep = null;
+            let pendingConditions = [];
+            const steps = [];
+            
+            lines.forEach((line, index) => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+                
+                // Try to parse as step
+                const stepPattern = /^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$/i;
+                const stepMatch = trimmed.match(stepPattern);
+                
+                if (stepMatch) {
+                    // Save previous step with its conditions
+                    if (currentStep) {
+                        currentStep.conditions = [...pendingConditions];
+                        steps.push(currentStep);
+                    }
+                    
+                    // Start new step
+                    const [, keyword, number, description] = stepMatch;
+                    currentStep = {
+                        type: keyword.toUpperCase(),
+                        number: number ? parseInt(number) : 0,
+                        description: description,
+                        lineNumber: index + 1,
+                        conditions: []
+                    };
+                    pendingConditions = [];
+                    
+                    results.innerHTML += `<div class="step">📍 Step: ${currentStep.type} ${currentStep.number} - ${currentStep.description}</div>`;
+                    return;
+                }
+                
+                // Enhanced condition detection
+                if (currentStep) {
+                    const hasIndentation = /^\s+/.test(line);
+                    const hasExplicitMarkers = trimmed.startsWith('-') || trimmed.startsWith('+');
+                    
+                    const hasNegation = /^(NIET|NOT|NICHT)\s+/i.test(trimmed);
+                    const hasTimer = /(?:TIJD|ZEIT|TIME)\s+\d+/i.test(trimmed);
+                    const hasAssignment = trimmed.includes('=') && !trimmed.match(/^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)/i);
+                    const hasCrossRef = trimmed.includes('(') && trimmed.includes('SCHRITT');
+                    const hasComparison = /:\s*\w+/.test(trimmed) && !trimmed.includes('SCHRITT');
+                    
+                    const isCondition = hasExplicitMarkers || 
+                                       (hasIndentation && trimmed.length > 0) ||
+                                       (hasNegation || hasTimer || hasAssignment || hasCrossRef || hasComparison);
+                    
+                    if (isCondition) {
+                        let conditionText = trimmed;
+                        
+                        // Clean condition text
+                        if (conditionText.startsWith('-')) conditionText = conditionText.substring(1).trim();
+                        const isOr = conditionText.startsWith('+');
+                        if (isOr) conditionText = conditionText.substring(1).trim();
+                        
+                        const isNegated = /^(NIET|NOT|NICHT)\s+/i.test(conditionText);
+                        if (isNegated) conditionText = conditionText.replace(/^(NIET|NOT|NICHT)\s+/i, '').trim();
+                        
+                        // Check for cross-reference
+                        const crossRefMatch = conditionText.match(/^(.+?)\s*\(([^)]+)\s+(SCHRITT|STAP|STEP)\s+([0-9+]+)\)\s*$/i);
+                        
+                        // Check for timer
+                        const timerMatch = conditionText.match(/(?:TIJD|ZEIT|TIME)\s+(\d+)\s*(Sek|sek|Min|min|s|m)\s*\?\?/i);
+                        
+                        const condition = {
+                            text: conditionText,
+                            operator: isOr ? 'OR' : 'AND',
+                            negated: isNegated,
+                            lineNumber: index + 1,
+                            crossReference: crossRefMatch ? {
+                                description: crossRefMatch[1].trim(),
+                                program: crossRefMatch[2].trim(),
+                                steps: crossRefMatch[4].split('+').map(s => parseInt(s.trim()))
+                            } : null,
+                            timer: timerMatch ? {
+                                value: parseInt(timerMatch[1]),
+                                unit: timerMatch[2]
+                            } : null
+                        };
+                        
+                        pendingConditions.push(condition);
+                        
+                        let typeInfo = [];
+                        if (condition.negated) typeInfo.push('NOT');
+                        if (condition.operator === 'OR') typeInfo.push('OR');
+                        if (condition.crossReference) typeInfo.push(`→ ${condition.crossReference.program}`);
+                        if (condition.timer) typeInfo.push(`⏰ ${condition.timer.value}${condition.timer.unit}`);
+                        
+                        results.innerHTML += `<div class="condition">✅ "${condition.text}" [${typeInfo.join(', ')}]</div>`;
+                    }
+                }
+            });
+            
+            // Save last step
+            if (currentStep) {
+                currentStep.conditions = [...pendingConditions];
+                steps.push(currentStep);
+            }
+            
+            // Summary
+            results.innerHTML += `<div class="result info"><strong>📊 Parser Results:</strong><br>`;
+            results.innerHTML += `Total steps: ${steps.length}<br>`;
+            results.innerHTML += `Total conditions: ${steps.reduce((sum, step) => sum + step.conditions.length, 0)}<br>`;
+            results.innerHTML += `Cross-references: ${steps.reduce((sum, step) => sum + step.conditions.filter(c => c.crossReference).length, 0)}<br>`;
+            results.innerHTML += `Timers: ${steps.reduce((sum, step) => sum + step.conditions.filter(c => c.timer).length, 0)}<br>`;
+            results.innerHTML += `Assignments: ${steps.reduce((sum, step) => sum + step.conditions.filter(c => c.text.includes('=')).length, 0)}</div>`;
+            
+            results.innerHTML += '</div>';
+        }
+
+        // Auto-run on load
+        window.onload = () => {
+            setTimeout(testNewParser, 500);
+        };
+    </script>
+</body>
+</html>

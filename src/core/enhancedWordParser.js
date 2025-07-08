@@ -78,15 +78,15 @@ function convertToStandaardwerkFormat(rawContent, syntaxRules) {
       continue;
     }
 
-    // Als we binnen een stap zijn, voeg voorwaarden toe met tab
+    // Als we binnen een stap zijn, voeg content toe ZONDER extra formatting
     if (insideStep) {
       if (line.startsWith('+')) {
-        // OR voorwaarde behouden
-        outputLines.push(`\t${line}`);
+        // OR voorwaarde - behoud originele formatting
+        outputLines.push(line);
         console.log(`  ↳ OR voorwaarde: ${line}`);
       } else {
-        // Normale voorwaarde
-        outputLines.push(`\t${line}`);
+        // Normale voorwaarde - behoud originele formatting, geen extra streepjes of tabs!
+        outputLines.push(line);
         console.log(`  ↳ Voorwaarde: ${line}`);
       }
     } else {

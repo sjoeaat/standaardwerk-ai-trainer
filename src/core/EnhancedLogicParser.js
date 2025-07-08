@@ -164,13 +164,28 @@ export class EnhancedLogicParser extends LogicParser {
   tryParseCondition(line, lineNumber, currentStep, currentVariableDefinition, pendingConditions) {
     if (!currentStep && !currentVariableDefinition) return false;
 
-    // Check for condition markers (-, +, or indented lines)
     const trimmedLine = line.trim();
+    if (!trimmedLine) return false;
+
+    // Enhanced condition detection for Word documents without explicit markers
     const hasIndentation = /^\s+/.test(line);
-    const isConditionLine = trimmedLine.startsWith('-') || trimmedLine.startsWith('+') || 
-                           (hasIndentation && currentStep && trimmedLine.length > 0);
+    const hasExplicitMarkers = trimmedLine.startsWith('-') || trimmedLine.startsWith('+');
+    
+    // Check for implicit condition indicators
+    const hasNegation = /^(NIET|NOT|NICHT)\s+/i.test(trimmedLine);
+    const hasTimer = /(?:TIJD|ZEIT|TIME)\s+\d+/i.test(trimmedLine);
+    const hasAssignment = trimmedLine.includes('=') && !trimmedLine.match(/^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)/i);
+    const hasCrossRef = trimmedLine.includes('(') && trimmedLine.includes('SCHRITT');
+    const hasComparison = /:\s*\w+/.test(trimmedLine) && !trimmedLine.includes('SCHRITT');
+    
+    // A line is a condition if it has explicit markers, indentation, OR implicit indicators
+    const isConditionLine = hasExplicitMarkers || 
+                           (hasIndentation && currentStep && trimmedLine.length > 0) ||
+                           (currentStep && (hasNegation || hasTimer || hasAssignment || hasCrossRef || hasComparison));
 
     if (!isConditionLine) return false;
+
+    console.log(`🔍 Detected condition on line ${lineNumber}: "${trimmedLine}" (markers: ${hasExplicitMarkers}, indented: ${hasIndentation}, implicit: ${hasNegation || hasTimer || hasAssignment || hasCrossRef || hasComparison})`);
 
     let conditionText = trimmedLine;
     
