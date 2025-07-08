@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {  Code, Eye, FileText, Settings, AlertCircle, Download, UploadCloud,
   Folder, Loader2, Bug
 } from 'lucide-react';
-import { StandardWorkParser } from './core/StandardWorkParser';
+import { LogicParser } from './core/LogicParser';
 // UPDATED: Gebruik de enhanced word parser
 import { parseWordDocument } from './core/enhancedWordParser';
 import { generateTIAPortalXML } from './generator';
@@ -334,7 +334,7 @@ function App() {
         setParseResult(resultFromWord);
       } else {
         try {
-          const parser = new StandardWorkParser(syntaxRules);
+          const parser = new LogicParser(syntaxRules);
           const result = parser.parse(input);
           result.statistics = calculateStatistics(result);
           setParseResult(result);
