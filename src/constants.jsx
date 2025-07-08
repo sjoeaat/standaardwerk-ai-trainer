@@ -1,5 +1,3 @@
-// Standaard invoer en syntax-regels
-
 export const defaultInput = `L01: Hoofdprogramma Kraan FB300
 
 Symbool IDB: L01_Hoofdprogramma_kraan
@@ -27,8 +25,10 @@ export const defaultSyntaxRules = {
     step: ['STAP', 'SCHRITT', 'STEP']
   },
   variableDetection: {
-    timerKeywords: ['tijd', 'zeit', 'time', 'timer', 'dt', 'delay'],
-    markerKeywords: ['status', 'actief', 'vrijgave', 'enable', 'start', 'stop', 'ready'],
-    storingKeywords: ['storing', 'fault', 'error', 'alarm']
-  }
+    timerKeywords: ['tijd', 'timer', 'dt', 'delay', 't#', 'ton', 'tof'],
+    markerKeywords: ['status', 'actief', 'vrijgave', 'enable', 'start', 'stop', 'ready', 'hulp'],
+    storingKeywords: ['storing', 'fault', 'error', 'alarm', 'melding']
+  },
+  // Nieuwe optie om stricte step detectie in te schakelen
+  strictStepDetection: true
 };

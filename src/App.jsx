@@ -3,13 +3,11 @@ import {  Code, Eye, FileText, Settings, AlertCircle, Download, UploadCloud,
   Folder, Loader2, Bug
 } from 'lucide-react';
 import { parseStandaardwerk } from './core/parser';
-// UPDATED: Gebruik de enhanced word parser
 import { parseWordDocument } from './core/enhancedWordParser';
 import { generateTIAPortalXML } from './generator';
 import { exportParsedDocument } from './components/ui/exportManager';
 import { defaultInput, defaultSyntaxRules } from './constants';
 import CodeEditor from './components/CodeEditor';
-// UPDATED: Gebruik de enhanced analysis view
 import AnalysisView from './components/AnalysisView';
 import TiaXmlPreview from './components/TiaXmlPreview';
 import Tab from './components/ui/Tab';
@@ -18,7 +16,7 @@ import DebugView from './components/DebugView';
 import SyntaxConfigView from './components/SyntaxConfigView';
 
 // -------------------
-// ProjectHierarchy inline
+// ProjectHierarchy Component
 // -------------------
 const ProjectHierarchy = ({ hierarchy, onProgramSelect, activeProgram }) => {
   const tree = hierarchy?.children ? hierarchy.children : hierarchy;
@@ -47,7 +45,11 @@ const ProjectHierarchy = ({ hierarchy, onProgramSelect, activeProgram }) => {
                 <li key={program.fullTitle}>
                   <button
                     onClick={() => onProgramSelect(program)}
-                    className={`w-full text-left p-2 my-1 rounded-md flex items-center gap-2 transition-colors ${activeProgram?.fullTitle === program.fullTitle ? 'bg-blue-100 text-blue-800 font-semibold' : 'hover:bg-gray-100'}`}
+                    className={`w-full text-left p-2 my-1 rounded-md flex items-center gap-2 transition-colors ${
+                      activeProgram?.fullTitle === program.fullTitle 
+                        ? 'bg-blue-100 text-blue-800 font-semibold' 
+                        : 'hover:bg-gray-100'
+                    }`}
                   >
                     <FileText className="w-4 h-4 flex-shrink-0" />
                     <span className="flex-grow">{program.name} ({program.type}{program.fbNumber})</span>
@@ -64,7 +66,9 @@ const ProjectHierarchy = ({ hierarchy, onProgramSelect, activeProgram }) => {
   return <div className="space-y-1">{renderLevel(tree)}</div>;
 };
 
-// Verbeterde WordImportView component voor in App.js
+// -------------------
+// WordImportView Component
+// -------------------
 const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveProgram, setRawHtml, syntaxRules }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -93,7 +97,7 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
       );
       setRawHtml(html);
 
-      // UPDATED: Gebruik enhanced parser
+      // Parse met enhanced parser
       const result = await parseWordDocument(file, syntaxRules);
       setProjectData(result);
 
@@ -210,6 +214,19 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
               </div>
             </div>
 
+            {/* Analyse knop */}
+            <button
+              onClick={() => {
+                if (window.triggerDirectAnalysis) {
+                  window.triggerDirectAnalysis(activeProgram);
+                }
+              }}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <Eye />
+              Analyseer Dit Programma
+            </button>
+
             {/* Toon parse statistieken voor dit programma */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <h5 className="font-semibold text-sm mb-2">Programma Analyse:</h5>
@@ -293,7 +310,7 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
 };
 
 // -------------------
-// App component
+// Main App Component
 // -------------------
 function App() {
   const [input, setInput] = useState(defaultInput);
@@ -303,6 +320,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('wordImport');
   const [syntaxRules, setSyntaxRules] = useState(defaultSyntaxRules);
   const [rawHtml, setRawHtml] = useState('');
+  const [useManualMode, setUseManualMode] = useState(false);
 
   useEffect(() => {
     const calculateStatistics = (result) => ({
@@ -314,7 +332,7 @@ function App() {
     });
 
     const handler = setTimeout(() => {
-      if (activeProgram) {
+      if (activeProgram && !useManualMode) {
         const resultFromWord = {
           programName: activeProgram.name,
           functionBlock: `${activeProgram.type}${activeProgram.fbNumber}`,
@@ -339,13 +357,39 @@ function App() {
           setParseResult(result);
         } catch (error) {
           console.error("Parsing Error:", error);
-          setParseResult({ errors: [{ message: error.message, line: 1 }], steps: [], statistics: {}, timers: [], markers: [], variables: [], storingen: [] });
+          setParseResult({ 
+            errors: [{ message: error.message, line: 1 }], 
+            steps: [], 
+            statistics: {}, 
+            timers: [], 
+            markers: [], 
+            variables: [], 
+            storingen: [] 
+          });
         }
       }
     }, 300);
 
     return () => clearTimeout(handler);
-  }, [input, activeProgram, syntaxRules]);
+  }, [input, activeProgram, syntaxRules, useManualMode]);
+
+  const handleProgramSelect = (program) => {
+    setActiveProgram(program);
+    setUseManualMode(false);
+  };
+
+  // Direct analysis trigger
+  useEffect(() => {
+    window.triggerDirectAnalysis = (program) => {
+      setActiveProgram(program);
+      setUseManualMode(false);
+      setActiveTab('analysis');
+    };
+    
+    return () => {
+      delete window.triggerDirectAnalysis;
+    };
+  }, []);
 
   const tabs = [
     { id: 'wordImport', label: 'Word Import', icon: UploadCloud },
@@ -363,7 +407,7 @@ function App() {
           projectData={projectData}
           setProjectData={setProjectData}
           activeProgram={activeProgram}
-          setActiveProgram={setActiveProgram}
+          setActiveProgram={handleProgramSelect}
           setRawHtml={setRawHtml}
           syntaxRules={syntaxRules}
         />;
@@ -374,13 +418,57 @@ function App() {
       case 'input':
         return (
           <div>
+            {activeProgram && !useManualMode && (
+              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+                <span className="text-blue-800">
+                  Actief programma: <strong>{activeProgram.name}</strong>
+                </span>
+                <button
+                  onClick={() => {
+                    setUseManualMode(true);
+                    setInput(defaultInput);
+                  }}
+                  className="px-4 py-2 bg-white text-blue-600 border border-blue-300 rounded hover:bg-blue-50"
+                >
+                  Schakel naar handmatige invoer
+                </button>
+              </div>
+            )}
+            {useManualMode && activeProgram && (
+              <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-between">
+                <span className="text-yellow-800">Handmatige modus actief</span>
+                <button
+                  onClick={() => {
+                    setUseManualMode(false);
+                    setInput(activeProgram.rawContent || '');
+                  }}
+                  className="px-4 py-2 bg-white text-yellow-600 border border-yellow-300 rounded hover:bg-yellow-50"
+                >
+                  Terug naar {activeProgram.name}
+                </button>
+              </div>
+            )}
             <h2 className="text-lg font-semibold mb-2">Handmatige Code Editor</h2>
-            <p className="text-sm text-gray-600 mb-4">Deze editor wordt gebruikt als er geen programma uit een Word-document is geselecteerd.</p>
-            <CodeEditor input={input} setInput={setInput} />
+            <p className="text-sm text-gray-600 mb-4">
+              {activeProgram && !useManualMode 
+                ? "De code van het geselecteerde programma wordt getoond. Schakel naar handmatige modus om te bewerken."
+                : "Deze editor wordt gebruikt voor handmatige code invoer."}
+            </p>
+            <CodeEditor 
+              value={activeProgram && !useManualMode ? activeProgram.rawContent || '' : input} 
+              onChange={setInput} 
+              disabled={activeProgram && !useManualMode}
+            />
           </div>
         );
       case 'analysis':
-        return parseResult ? <AnalysisView parseResult={parseResult} /> : <div className="text-center p-8 text-gray-500">Selecteer een programma of voer code in om een analyse te zien.</div>;
+        return parseResult ? (
+          <AnalysisView parseResult={parseResult} />
+        ) : (
+          <div className="text-center p-8 text-gray-500">
+            Selecteer een programma of voer code in om een analyse te zien.
+          </div>
+        );
       case 'tia':
         return <TiaXmlPreview parseResult={parseResult} generateXml={generateTIAPortalXML} />;
       default:
@@ -392,7 +480,19 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-screen-2xl mx-auto p-4 sm:p-6">
         <header className="mb-6 bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Standaardwerk Compiler & Validator</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Standaardwerk Compiler & Validator
+            {activeProgram && !useManualMode && (
+              <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                {activeProgram.name}
+              </span>
+            )}
+            {useManualMode && (
+              <span className="ml-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
+                Handmatig
+              </span>
+            )}
+          </h1>
           <p className="text-gray-600">Geavanceerde parser voor stappenprogramma's • TIA Portal V18 Ready</p>
         </header>
         <nav className="bg-white rounded-lg shadow-sm mb-6">

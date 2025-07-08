@@ -31,71 +31,72 @@ function generateIdbName(programName) {
   return name.replace(/[^a-zA-Z0-9_]/g, '') || 'Generated_IDB';
 }
 
-// Helper: converteer Word content naar standaardwerk format
+// Helper: converteer Word content naar standaardwerk format (MINIMAL TRANSFORMATION)
+// PROBLEEM: De conversie functie is te agressief
+// We moeten de originele structuur beter respecteren
+
 function convertToStandaardwerkFormat(rawContent, syntaxRules) {
-  console.log('🔄 Converting to Standaardwerk format...');
-  console.log('Raw content:', rawContent);
+  console.log('🔄 Converting content - RAW INPUT:');
+  console.log(rawContent);
+  console.log('---END RAW INPUT---');
   
-  const allRestWords = syntaxRules.stepKeywords.rest.map(w => w.toUpperCase());
-  const allStepWords = syntaxRules.stepKeywords.step.map(w => w.toUpperCase());
-
-  const lines = rawContent
-    .split(/\r?\n/)
-    .map(l => l.trim())
-    .filter(Boolean);
-
+  // NIEUW: Splits op nieuwe regels maar BEHOUD lege regels en tabs
+  const lines = rawContent.split(/\r?\n/);
   const outputLines = [];
-  let insideStep = false;
-  let currentStepOrRust = null;
-
-  for (const line of lines) {
-    const upper = line.toUpperCase();
-
-    // Check voor RUST
-    const rustMatch = allRestWords.find(word => upper.startsWith(word));
-    if (rustMatch) {
-      // Format: RUST: beschrijving
-      const description = line.substring(rustMatch.length).replace(/^:?\s*/, '').trim();
-      outputLines.push(`${rustMatch}: ${description}`);
-      insideStep = true;
-      currentStepOrRust = 'RUST';
-      console.log(`✅ RUST gevonden: ${description}`);
-      continue;
-    }
-
-    // Check voor STAP met nummer
-    const stepRegex = new RegExp(`^(${allStepWords.join('|')})\\s+(\\d+)`, 'i');
-    const stepMatch = line.match(stepRegex);
-    if (stepMatch) {
-      const [, keyword, number] = stepMatch;
-      // Format: STAP X: beschrijving
-      const afterNumber = line.substring(stepMatch[0].length).replace(/^:?\s*/, '').trim();
-      outputLines.push(`${keyword.toUpperCase()} ${number}: ${afterNumber}`);
-      insideStep = true;
-      currentStepOrRust = `STAP ${number}`;
-      console.log(`✅ STAP ${number} gevonden: ${afterNumber}`);
-      continue;
-    }
-
-    // Als we binnen een stap zijn, voeg voorwaarden toe met tab
-    if (insideStep) {
-      if (line.startsWith('+')) {
-        // OR voorwaarde behouden
-        outputLines.push(`\t${line}`);
-        console.log(`  ↳ OR voorwaarde: ${line}`);
-      } else {
-        // Normale voorwaarde
-        outputLines.push(`\t${line}`);
-        console.log(`  ↳ Voorwaarde: ${line}`);
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+    
+    // Log elke regel voor debug
+    console.log(`Regel ${i}: [${line}]`);
+    
+    // Check voor STAP of RUST keywords
+    let isStepHeader = false;
+    
+    // Check RUST
+    for (const keyword of syntaxRules.stepKeywords.rest) {
+      if (trimmedLine.toUpperCase().startsWith(keyword.toUpperCase())) {
+        isStepHeader = true;
+        console.log(`  -> RUST gevonden: ${trimmedLine}`);
+        break;
       }
+    }
+    
+    // Check STAP (met nummer)
+    if (!isStepHeader) {
+      for (const keyword of syntaxRules.stepKeywords.step) {
+        const regex = new RegExp(`^${keyword}\\s+\\d+`, 'i');
+        if (regex.test(trimmedLine)) {
+          isStepHeader = true;
+          console.log(`  -> STAP gevonden: ${trimmedLine}`);
+          break;
+        }
+      }
+    }
+    
+    // BELANGRIJK: Behoud originele indentatie waar mogelijk
+    if (line.startsWith('\t') || line.startsWith('    ')) {
+      // Deze regel is al ingesprongen - behoud zoals het is
+      outputLines.push(line);
+      console.log(`  -> Behoud ingesprongen regel: [${line}]`);
+    } else if (isStepHeader) {
+      // Step header - geen indentatie
+      outputLines.push(trimmedLine);
+    } else if (trimmedLine === '') {
+      // Lege regel - behouden voor structuur
+      outputLines.push('');
     } else {
-      // Niet binnen een stap - normale regel
+      // Andere content - voeg toe zoals het is
       outputLines.push(line);
     }
   }
-
+  
   const result = outputLines.join('\n');
-  console.log('📋 Converted content:', result);
+  console.log('📋 CONVERTED OUTPUT:');
+  console.log(result);
+  console.log('---END CONVERTED OUTPUT---');
+  
   return result;
 }
 
@@ -287,21 +288,40 @@ export async function parseWordDocument(file, syntaxRules) {
           result.warnings.push(`Dubbel FB/FC nummer ${num} bij "${name.trim()}"`);
         }
         seenFbNumbers.add(num);
-
+  
       } else if (collectingContent && item.type === 'p') {
-        // Voeg content toe aan buffer
-        const lines = txt.split('\n').map(l => l.trim()).filter(l => l);
+        // VERBETERD: Behoud originele structuur van de content
         
-        for (const line of lines) {
-          // Check voor Symbolik IDB
-          const idbMatch = line.match(SYMBOLIK_IDB_REGEX);
-          if (idbMatch && currentProgram) {
-            currentProgram.idbName = idbMatch[1].trim();
-            console.log(`  ↳ IDB naam: ${currentProgram.idbName}`);
-          }
-          
-          // Voeg alle content toe
-          contentBuffer.push(line);
+        // Gebruik de originele tekst zonder trim om tabs/spaties te behouden
+        const rawText = item.content;
+        
+        // Check eerst voor Symbolik IDB
+        const idbMatch = rawText.match(SYMBOLIK_IDB_REGEX);
+        if (idbMatch && currentProgram) {
+          currentProgram.idbName = idbMatch[1].trim();
+          console.log(`  ↳ IDB naam: ${currentProgram.idbName}`);
+          // Skip deze regel - voeg NIET toe aan content buffer
+          continue;
+        }
+        
+        // Skip ook andere IDB varianten
+        if (rawText.match(/^(Symbool|Symbolik)\s+IDB/i)) {
+          continue;
+        }
+        
+        // BELANGRIJK: Behoud de structuur van de paragraph
+        // Word kan meerdere regels in één paragraph hebben
+        if (rawText.includes('\n')) {
+          // Split maar behoud lege regels
+          const lines = rawText.split('\n');
+          lines.forEach(line => {
+            contentBuffer.push(line);
+            console.log(`  ↳ Multi-line content toegevoegd: "${line}"`);
+          });
+        } else {
+          // Enkele regel - voeg toe zoals het is (met eventuele tabs/spaties)
+          contentBuffer.push(rawText);
+          console.log(`  ↳ Content toegevoegd: "${rawText}"`);
         }
       }
 
