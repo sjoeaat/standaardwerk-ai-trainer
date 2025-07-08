@@ -19,6 +19,9 @@ import DebugView from './components/DebugView';
 import SyntaxConfigView from './components/SyntaxConfigView';
 import ValidationConfigManager from './components/ValidationConfigManager';
 
+
+
+
 // -------------------
 // ProjectHierarchy inline
 // -------------------
@@ -67,7 +70,16 @@ const ProjectHierarchy = ({ hierarchy, onProgramSelect, activeProgram }) => {
 };
 
 // Verbeterde WordImportView component voor in App.js
-const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveProgram, setRawHtml, syntaxRules }) => {
+const WordImportView = ({
+  setProjectData,
+  projectData,
+  activeProgram,
+  setActiveProgram,
+  setRawHtml,
+  syntaxRules,
+  programRegistry,
+  setProgramRegistry
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [parseDetails, setParseDetails] = useState(null);
@@ -84,22 +96,56 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
     setParseDetails(null);
 
     try {
-      // Eerst HTML extractie voor debug
       const { value: html } = await window.mammoth.convertToHtml(
         { arrayBuffer: await file.arrayBuffer() },
-        { styleMap: [
-          "p[style-name='Heading 1'] => h1:fresh", 
-          "p[style-name='Heading 2'] => h2:fresh", 
-          "p[style-name='Heading 3'] => h3:fresh"
-        ]}
+        {
+          styleMap: [
+            "p[style-name='Heading 1'] => h1:fresh",
+            "p[style-name='Heading 2'] => h2:fresh",
+            "p[style-name='Heading 3'] => h3:fresh"
+          ]
+        }
       );
       setRawHtml(html);
-
-      // UPDATED: Gebruik enhanced parser
+      const syntaxRules = {
+        stepDetection: {
+          patterns: [
+            "^SCHRITT\\s+\\d+[:\\.\\-\\s]"
+          ],
+          stripPrefix: true
+        },
+        timerDetection: {
+          patterns: [
+            "\\b(Timer|Zeit|T\\d{1,4})\\b"
+          ]
+        },
+        markerDetection: {
+          patterns: [
+            "\\bM\\d{1,5}(\\.\\d)?\\b",
+            "\\bMB\\d{1,5}\\b",
+            "\\bMerker\\s*\\d{1,5}\\b"
+          ]
+        },
+        storingDetection: {
+          patterns: [
+            "\\bStörung\\b",
+            "\\bFehler\\b",
+            "\\bAlarm\\b"
+          ]
+        },
+        variableDetection: {
+          patterns: [
+            "\\b\\w+(?:\\.\\w+)*(?:\\[\\d+\\])?\\s*(==|=|<>|<|>|<=|>=)\\s*[^\\s\\n]+",
+            "\\b[A-Za-z_]+\\d*(?:\\[[^\\]]+\\])?\\b"
+          ]
+        }
+      };
+      
       const result = await parseWordDocument(file, syntaxRules);
+
       setProjectData(result);
 
-      // Update program registry with parsed programs
+      // ✅ Hier gebruiken we de juiste props
       const newRegistry = new Map(programRegistry);
       if (result.programs) {
         result.programs.forEach(program => {
@@ -108,13 +154,14 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
             variables: program.variables || [],
             timers: program.timers || [],
             markers: program.markers || [],
-            storingen: program.storingen || []
+            storingen: program.storingen || [],
+            errors: program.errors || [],
+            warnings: program.warnings || []
           });
         });
         setProgramRegistry(newRegistry);
       }
 
-      // Toon statistieken
       if (result.statistics) {
         setParseDetails(result.statistics);
       }
@@ -123,7 +170,6 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
         setError(result.errors.map(e => e.message || e).join(', '));
       }
 
-      // Auto-selecteer eerste programma als er maar één is
       if (result.programs?.length === 1) {
         setActiveProgram(result.programs[0]);
       }
@@ -137,7 +183,7 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
 
   const handleExport = async () => {
     if (!projectData) return;
-    await exportParsedDocument(projectData, { 
+    await exportParsedDocument(projectData, {
       projectName: 'TIA_Project_Export',
       generateIDBs: true,
       includeCallStatements: true,
@@ -147,7 +193,6 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
 
   const handleProgramSelect = (program) => {
     setActiveProgram(program);
-    // Scroll naar boven wanneer nieuw programma wordt geselecteerd
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -157,15 +202,15 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
         <div className="bg-white border rounded-lg p-6">
           <h3 className="text-xl font-semibold mb-4 text-gray-800">1. Importeer Word Document</h3>
           <input type="file" id="file-upload" className="hidden" accept=".docx" onChange={handleFileChange} />
-          <button 
-            onClick={() => document.getElementById('file-upload').click()} 
-            disabled={isLoading} 
+          <button
+            onClick={() => document.getElementById('file-upload').click()}
+            disabled={isLoading}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
           >
             <UploadCloud className={isLoading ? "animate-pulse" : ""} />
             {isLoading ? 'Bezig met parsen...' : 'Kies .docx bestand'}
           </button>
-          
+
           {error && (
             <div className="mt-4 text-red-600 bg-red-50 p-3 rounded-lg flex items-start gap-2">
               <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
@@ -195,10 +240,10 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
               <Loader2 className="animate-spin w-8 h-8" />
             </div>
           ) : projectData ? (
-            <ProjectHierarchy 
-              hierarchy={projectData.hierarchy} 
-              onProgramSelect={handleProgramSelect} 
-              activeProgram={activeProgram} 
+            <ProjectHierarchy
+              hierarchy={projectData.hierarchy}
+              onProgramSelect={handleProgramSelect}
+              activeProgram={activeProgram}
             />
           ) : (
             <div className="text-center text-gray-400 pt-16">
@@ -227,7 +272,6 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
               </div>
             </div>
 
-            {/* Toon parse statistieken voor dit programma */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <h5 className="font-semibold text-sm mb-2">Programma Analyse:</h5>
               <div className="grid grid-cols-2 gap-2 text-sm">
@@ -240,7 +284,6 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
               </div>
             </div>
 
-            {/* Toon raw content */}
             <details className="border rounded-lg">
               <summary className="px-4 py-2 bg-gray-50 cursor-pointer hover:bg-gray-100">
                 Raw Content ({activeProgram.rawContent?.length || 0} karakters)
@@ -250,7 +293,6 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
               </div>
             </details>
 
-            {/* Toon processed content voor debug */}
             {activeProgram.processedContent && (
               <details className="border rounded-lg">
                 <summary className="px-4 py-2 bg-gray-50 cursor-pointer hover:bg-gray-100">
@@ -262,8 +304,8 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
               </details>
             )}
 
-            <button 
-              onClick={handleExport} 
+            <button
+              onClick={handleExport}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
             >
               <Download />
@@ -275,35 +317,6 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
             Selecteer een programma om de details te bekijken.
           </div>
         )}
-
-        {/* Warnings sectie */}
-        {projectData?.warnings?.length > 0 && (
-          <div className="mt-6">
-            <h4 className="font-semibold text-yellow-800 mb-2">Waarschuwingen</h4>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {projectData.warnings.map((warning, i) => (
-                <div key={i} className="text-yellow-700 bg-yellow-50 p-3 rounded-lg text-sm flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                  <span>{warning}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Program-specific errors */}
-        {activeProgram?.errors?.length > 0 && (
-          <div className="mt-6">
-            <h4 className="font-semibold text-red-800 mb-2">Parse Fouten in dit Programma</h4>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {activeProgram.errors.map((error, i) => (
-                <div key={i} className="text-red-700 bg-red-50 p-3 rounded-lg text-sm">
-                  Regel {error.line}: {error.message}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -313,6 +326,7 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
 // App component
 // -------------------
 function App() {
+
   const [input, setInput] = useState(defaultInput);
   const [parseResult, setParseResult] = useState(null);
   const [projectData, setProjectData] = useState(null);
@@ -399,13 +413,16 @@ function App() {
     switch (activeTab) {
       case 'wordImport':
         return <WordImportView
-          projectData={projectData}
-          setProjectData={setProjectData}
-          activeProgram={activeProgram}
-          setActiveProgram={setActiveProgram}
-          setRawHtml={setRawHtml}
-          syntaxRules={syntaxRules}
-        />;
+        projectData={projectData}
+        setProjectData={setProjectData}
+        activeProgram={activeProgram}
+        setActiveProgram={setActiveProgram}
+        setRawHtml={setRawHtml}
+        syntaxRules={syntaxRules}
+        programRegistry={programRegistry}
+        setProgramRegistry={setProgramRegistry}
+      />
+      ;
       case 'config':
         return <SyntaxConfigView syntaxRules={syntaxRules} setSyntaxRules={setSyntaxRules} />;
       case 'validation':

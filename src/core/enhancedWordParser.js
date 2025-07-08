@@ -8,7 +8,7 @@
 import * as mammoth from 'mammoth';
 import { buildFolderTree } from './hierarchyBuilder';
 import { UnifiedTextParser } from './UnifiedTextParser.js';
-import { DEFAULT_VALIDATION_RULES } from '../config/validationRules.js';
+import { DEFAULT_VALIDATION_RULES, validateVariableDefinition, validateStepDefinition } from '../config/validationRules.js';
 
 // Regex patterns
 const PROGRAM_TITLE_REGEX = /^(.*?)\s+(FB|FC)(\d+)/i;
