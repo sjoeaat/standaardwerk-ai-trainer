@@ -24,11 +24,21 @@ NIET Noodstop_ingedrukt`;
 export const defaultSyntaxRules = {
   stepKeywords: {
     rest: ['RUST', 'RUHE', 'IDLE'],
-    step: ['STAP', 'SCHRITT', 'STEP']
+    step: ['STAP', 'SCHRITT', 'STEP'],
+    end: ['KLAAR', 'FERTIG', 'END']
   },
   variableDetection: {
     timerKeywords: ['tijd', 'zeit', 'time', 'timer', 'dt', 'delay'],
     markerKeywords: ['status', 'actief', 'vrijgave', 'enable', 'start', 'stop', 'ready'],
     storingKeywords: ['storing', 'fault', 'error', 'alarm']
+  },
+  conditions: {
+    orPrefix: '+',
+    notPrefix: ['NIET', 'NICHT', 'NOT'],
+    transitionPrefix: '->'
+  },
+  format: {
+    requireColon: true,
+    allowSpaces: true
   }
 };
