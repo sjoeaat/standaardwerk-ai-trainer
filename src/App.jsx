@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {  Code, Eye, FileText, Settings, AlertCircle, Download, UploadCloud,
   Folder, Loader2, Bug
 } from 'lucide-react';
-import { LogicParser } from './core/LogicParser';
+import { UnifiedTextParser } from './core/UnifiedTextParser.js';
+import { DEFAULT_VALIDATION_RULES } from './config/validationRules.js';
 // UPDATED: Gebruik de enhanced word parser
 import { parseWordDocument } from './core/enhancedWordParser';
 import { generateTIAPortalXML } from './generator';
@@ -16,6 +17,7 @@ import Tab from './components/ui/Tab';
 import ErrorBoundary from './components/ErrorBoundary';
 import DebugView from './components/DebugView';
 import SyntaxConfigView from './components/SyntaxConfigView';
+import ValidationConfigManager from './components/ValidationConfigManager';
 
 // -------------------
 // ProjectHierarchy inline
@@ -96,6 +98,21 @@ const WordImportView = ({ setProjectData, projectData, activeProgram, setActiveP
       // UPDATED: Gebruik enhanced parser
       const result = await parseWordDocument(file, syntaxRules);
       setProjectData(result);
+
+      // Update program registry with parsed programs
+      const newRegistry = new Map(programRegistry);
+      if (result.programs) {
+        result.programs.forEach(program => {
+          newRegistry.set(program.name, {
+            steps: program.steps || [],
+            variables: program.variables || [],
+            timers: program.timers || [],
+            markers: program.markers || [],
+            storingen: program.storingen || []
+          });
+        });
+        setProgramRegistry(newRegistry);
+      }
 
       // Toon statistieken
       if (result.statistics) {
@@ -303,6 +320,8 @@ function App() {
   const [activeTab, setActiveTab] = useState('wordImport');
   const [syntaxRules, setSyntaxRules] = useState(defaultSyntaxRules);
   const [rawHtml, setRawHtml] = useState('');
+  const [validationRules, setValidationRules] = useState(DEFAULT_VALIDATION_RULES);
+  const [programRegistry, setProgramRegistry] = useState(new Map());
 
   useEffect(() => {
     const calculateStatistics = (result) => ({
@@ -334,13 +353,31 @@ function App() {
         setParseResult(resultFromWord);
       } else {
         try {
-          const parser = new LogicParser(syntaxRules);
-          const result = parser.parse(input);
+          const parser = new UnifiedTextParser(syntaxRules, validationRules);
+          // Register existing programs for cross-reference validation
+          programRegistry.forEach((program, name) => {
+            parser.registerProgram(name, program);
+          });
+          
+          const result = parser.parse(input, 'manual', {
+            programName: 'Manual Input',
+            functionBlock: 'FB_Manual'
+          });
           result.statistics = calculateStatistics(result);
           setParseResult(result);
         } catch (error) {
           console.error("Parsing Error:", error);
-          setParseResult({ errors: [{ message: error.message, line: 1 }], steps: [], statistics: {}, timers: [], markers: [], variables: [], storingen: [] });
+          setParseResult({ 
+            errors: [{ message: error.message, line: 1, type: 'PARSING_ERROR' }], 
+            warnings: [],
+            steps: [], 
+            statistics: {}, 
+            timers: [], 
+            markers: [], 
+            variables: [], 
+            storingen: [],
+            crossReferences: []
+          });
         }
       }
     }, 300);
@@ -354,6 +391,7 @@ function App() {
     { id: 'analysis', label: 'Analyse', icon: Eye },
     { id: 'tia', label: 'TIA Preview', icon: FileText },
     { id: 'config', label: 'Configuratie', icon: Settings },
+    { id: 'validation', label: 'Validatie', icon: AlertCircle },
     { id: 'debug', label: 'Debug', icon: Bug }
   ];
 
@@ -370,6 +408,13 @@ function App() {
         />;
       case 'config':
         return <SyntaxConfigView syntaxRules={syntaxRules} setSyntaxRules={setSyntaxRules} />;
+      case 'validation':
+        return <ValidationConfigManager 
+          validationRules={validationRules}
+          onUpdateRules={setValidationRules}
+          programRegistry={programRegistry}
+          onUpdateProgramRegistry={setProgramRegistry}
+        />;
       case 'debug':
         return <DebugView rawHtml={rawHtml} projectData={projectData} finalParseResult={parseResult} />;
       case 'input':

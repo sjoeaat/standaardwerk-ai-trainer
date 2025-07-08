@@ -7,7 +7,8 @@
 
 import * as mammoth from 'mammoth';
 import { buildFolderTree } from './hierarchyBuilder';
-import { LogicParser } from './LogicParser';
+import { UnifiedTextParser } from './UnifiedTextParser.js';
+import { DEFAULT_VALIDATION_RULES } from '../config/validationRules.js';
 
 // Regex patterns
 const PROGRAM_TITLE_REGEX = /^(.*?)\s+(FB|FC)(\d+)/i;
@@ -119,12 +120,13 @@ export async function parseWordDocument(file, syntaxRules) {
     console.log(`💾 Saving program: ${currentProgram.name}`);
 
     try {
-      // Converteer de content naar het juiste format
-      const standardwerkContent = convertToStandaardwerkFormat(currentProgram.rawContent, syntaxRules);
-      
-      // Parse met de volledige LogicParser
-      const parser = new LogicParser(syntaxRules);
-      const fullParseResult = parser.parse(standardwerkContent);
+      // Parse met de nieuwe UnifiedTextParser voor consistente verwerking
+      const parser = new UnifiedTextParser(syntaxRules, DEFAULT_VALIDATION_RULES);
+      const fullParseResult = parser.parse(currentProgram.rawContent, 'word', {
+        programName: currentProgram.name,
+        functionBlock: currentProgram.type + currentProgram.fbNumber,
+        filePath: currentProgram.path
+      });
       
       console.log(`📊 Parse result for ${currentProgram.name}:`, {
         steps: fullParseResult.steps.length,
