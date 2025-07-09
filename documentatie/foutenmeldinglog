@@ -1,108 +1,4 @@
 :5173/vite.svg:1  Failed to load resource: the server responded with a status of 404 (Not Found)
-:5173/vite.svg:1  Failed to load resource: the server responded with a status of 404 (Not Found)
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 2: NICHT Auf Sollwert Position" (length: 38)
- 🎯 Character codes: Array(38)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 2 - NICHT Auf Sollwert Position
- 📝 Created step: Object
- 🔍 Trying to parse step on line 33: "SCHRITT 7: Signalisierung Horde geht bewegen"
- Available step keywords: Object
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 7: Signalisierung Horde geht bewegen" (length: 44)
- 🎯 Character codes: Array(44)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 7 - Signalisierung Horde geht bewegen
- 📝 Created step: Object
- 🔍 Trying to parse step on line 35: "SCHRITT 8: Horde senken"
- Available step keywords: Object
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 8: Horde senken" (length: 23)
- 🎯 Character codes: Array(23)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 8 - Horde senken
- 📝 Created step: Object
- 🔍 Detected condition on line 36: "Istwert Position [mm] &lt; = Sollwert Position [mm] + Marge [mm]" (markers: false, indented: false, implicit: true)
- 🔍 Parsing condition on line 36: "Istwert Position [mm] &lt; = Sollwert Position [mm] + Marge [mm]" (OR: false, NOT: false)
- 📝 Found variable assignment: "Istwert Position [mm] &lt; = Sollwert Position [mm] + Marge [mm]"
- 🔍 Trying to parse step on line 37: "SCHRITT 9: Stopp/Kontrolle Position"
- Available step keywords: Object
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 9: Stopp/Kontrolle Position" (length: 35)
- 🎯 Character codes: Array(35)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 9 - Stopp/Kontrolle Position
- 📝 Created step: Object
- 🔍 Detected condition on line 38: "NICHT Hebevorrichtung Horde N31 hinunten (NICHT N31-100-L)" (markers: false, indented: false, implicit: true)
- 🔍 Parsing condition on line 38: "Hebevorrichtung Horde N31 hinunten (NICHT N31-100-L)" (OR: false, NOT: true)
- 🔍 Detected condition on line 40: "+ von" (markers: true, indented: false, implicit: false)
- 🔍 Parsing condition on line 40: "von" (OR: true, NOT: false)
- 🔍 Trying to parse step on line 41: "SCHRITT 2: Auf Sollwert Position"
- Available step keywords: Object
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 2: Auf Sollwert Position" (length: 32)
- 🎯 Character codes: Array(32)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 2 - Auf Sollwert Position
- 📝 Created step: Object
- 🔍 Trying to parse step on line 42: "SCHRITT 10: Fertig"
- Available step keywords: Object
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 10: Fertig" (length: 18)
- 🎯 Character codes: Array(18)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 10 - Fertig
- 📝 Created step: Object
- 🔍 Trying to parse step on line 44: "SCHRITT 4: Horde während Aufstellen oder Warten aus Ausfuhrtabelle entfernt: Sollwert Position N31 = 21 (unterste Position)"
- Available step keywords: Object
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 4: Horde während Aufstellen oder Warten aus Ausfuhrtabelle entfernt: Sollwert Position N31 = 21 (unterste Position)" (length: 123)
- 🎯 Character codes: Array(123)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 4 - Horde während Aufstellen oder Warten aus Ausfuhrtabelle entfernt: Sollwert Position N31 = 21 (unterste Position)
- 📝 Created step: Object
- 🔍 Trying to parse step on line 45: "SCHRITT 11: Stopp/Kontrolle Position"
- Available step keywords: Object
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 11: Stopp/Kontrolle Position" (length: 36)
- 🎯 Character codes: Array(36)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 11 - Stopp/Kontrolle Position
- 📝 Created step: Object
- 🔍 Detected condition on line 46: "NICHT Hydraulikpumpe MP131 dreht" (markers: false, indented: false, implicit: true)
- 🔍 Parsing condition on line 46: "Hydraulikpumpe MP131 dreht" (OR: false, NOT: true)
- 🔍 Trying to parse step on line 47: "SCHRITT 12: Fertig"
- Available step keywords: Object
- 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
- 🎯 Testing line: "SCHRITT 12: Fertig" (length: 18)
- 🎯 Character codes: Array(18)
- 🎯 Step match result: Array(4)
- ✅ Successfully parsed step: SCHRITT 12 - Fertig
- 📝 Created step: Object
- 🔍 Detected condition on line 51: "Pos. 3 Horde auf Etage 3: Pos. 19 Horde auf Etage 19" (markers: false, indented: false, implicit: true)
- 🔍 Parsing condition on line 51: "Pos. 3 Horde auf Etage 3: Pos. 19 Horde auf Etage 19" (OR: false, NOT: false)
- 🔍 Detected condition on line 56: "Sollwert OK = Sollwert Position &gt; = 1" (markers: false, indented: false, implicit: true)
- 🔍 Parsing condition on line 56: "Sollwert OK = Sollwert Position &gt; = 1" (OR: false, NOT: false)
- 📝 Found variable assignment: "Sollwert OK = Sollwert Position &gt; = 1"
- 🔍 Detected condition on line 57: "Sollwert Position &lt; = 21" (markers: false, indented: false, implicit: true)
- 🔍 Parsing condition on line 57: "Sollwert Position &lt; = 21" (OR: false, NOT: false)
- 📝 Found variable assignment: "Sollwert Position &lt; = 21"
- 🔍 Detected condition on line 58: "Stopp automatische Bewegung Horde = Störung Laser (N31-900-GTP): Synchronfehler" (markers: false, indented: false, implicit: true)
- 🔍 Parsing condition on line 58: "Stopp automatische Bewegung Horde = Störung Laser (N31-900-GTP): Synchronfehler" (OR: false, NOT: false)
- 📝 Found variable assignment: "Stopp automatische Bewegung Horde = Störung Laser (N31-900-GTP): Synchronfehler"
- 🔍 Detected condition on line 59: "+ Störung Laser (N31-900-GTP): Zu große Änderung Wert" (markers: true, indented: false, implicit: true)
- 🔍 Parsing condition on line 59: "Störung Laser (N31-900-GTP): Zu große Änderung Wert" (OR: true, NOT: false)
- 🔍 Detected condition on line 60: "+ Störung Laser (N31-900-GTP): Vorbei erwünschte Position" (markers: true, indented: false, implicit: true)
- 🔍 Parsing condition on line 60: "Störung Laser (N31-900-GTP): Vorbei erwünschte Position" (OR: true, NOT: false)
- 🔍 Detected condition on line 61: "+ Störung: Gefüllte Etage N31 ganz oben Salzlake" (markers: true, indented: false, implicit: true)
- 🔍 Parsing condition on line 61: "Störung: Gefüllte Etage N31 ganz oben Salzlake" (OR: true, NOT: false)
- 🔍 Detected condition on line 62: "+ Horde N21 Heben/Senken Störung: Niveau in Hydraulikbehälter für Horde N31/N21 zu niedrig" (markers: true, indented: false, implicit: true)
- 🔍 Parsing condition on line 62: "Horde N21 Heben/Senken Störung: Niveau in Hydraulikbehälter für Horde N31/N21 zu niedrig" (OR: true, NOT: false)
- 🔍 Detected condition on line 63: "Stopp Bewegung Horde nach oben = Störung: Gefüllte Etage Horde N31 ganz oben Salzlake" (markers: false, indented: false, implicit: true)
- 🔍 Parsing condition on line 63: "Stopp Bewegung Horde nach oben = Störung: Gefüllte Etage Horde N31 ganz oben Salzlake" (OR: false, NOT: false)
- 📝 Found variable assignment: "Stopp Bewegung Horde nach oben = Störung: Gefüllte Etage Horde N31 ganz oben Salzlake"
- 🔍 Detected condition on line 64: "+ Horde N21 Heben/Senken Störung: Niveau in Hydraulikbehälter für Horde N31/N31 zu niedrig" (markers: true, indented: false, implicit: true)
- 🔍 Parsing condition on line 64: "Horde N21 Heben/Senken Störung: Niveau in Hydraulikbehälter für Horde N31/N31 zu niedrig" (OR: true, NOT: false)
  🔍 Detected condition on line 65: "Stopp Horde nach unten bei Umschwimmen = SETZEN" (markers: false, indented: false, implicit: true)
  🔍 Parsing condition on line 65: "Stopp Horde nach unten bei Umschwimmen = SETZEN" (OR: false, NOT: false)
  📝 Found variable assignment: "Stopp Horde nach unten bei Umschwimmen = SETZEN"
@@ -246,6 +142,8 @@ SCHRITT 5: )
    - SCHRITT 12: )
    - SCHRITT 18: )
  📌 Found program: Horde N32 Heben/Senken FB452
+ 📁 Created program with path: [AusfuhrHorden N31-N34 → Maschineteile → Horde N31 Heben/Senken] for "Horde N32 Heben/Senken"
+ 🗂️ Updated path level 2: "Horde N32 Heben/Senken" → [AusfuhrHorden N31-N34 → Maschineteile → Horde N32 Heben/Senken]
    ↳ IDB naam: N32_HebenSenken
  💾 Saving program: Horde N32 Heben/Senken
  🔧 Starting normalization for source: word
@@ -259,9 +157,11 @@ Siehe: Horde N31 Heben/Senken
 Siehe: Horde N31 Heben/Senken
  ✅ Normalized text (first 300 chars): Symbolik IDB: N32_HebenSenken
 Siehe: Horde N31 Heben/Senken
-hook.js:608 ⚠️ Geen stappen gevonden voor Horde N32 Heben/Senken
-overrideMethod @ hook.js:608
+ ⚠️ Geen stappen gevonden voor Horde N32 Heben/Senken
+overrideMethod @ installHook.js:1
  📌 Found program: Horde N33 Heben/Senken FB454
+ 📁 Created program with path: [AusfuhrHorden N31-N34 → Maschineteile → Horde N32 Heben/Senken] for "Horde N33 Heben/Senken"
+ 🗂️ Updated path level 2: "Horde N33 Heben/Senken" → [AusfuhrHorden N31-N34 → Maschineteile → Horde N33 Heben/Senken]
    ↳ IDB naam: N33_HebenSenken
  💾 Saving program: Horde N33 Heben/Senken
  🔧 Starting normalization for source: word
@@ -275,10 +175,13 @@ Siehe: Horde N31 Heben/Senken
 Siehe: Horde N31 Heben/Senken
  ✅ Normalized text (first 300 chars): Symbolik IDB: N33_HebenSenken
 Siehe: Horde N31 Heben/Senken
-hook.js:608 ⚠️ Geen stappen gevonden voor Horde N33 Heben/Senken
-overrideMethod @ hook.js:608
+ ⚠️ Geen stappen gevonden voor Horde N33 Heben/Senken
+overrideMethod @ installHook.js:1
  📌 Found program: Horde N34 Heben/Senken FB456
+ 📁 Created program with path: [AusfuhrHorden N31-N34 → Maschineteile → Horde N33 Heben/Senken] for "Horde N34 Heben/Senken"
+ 🗂️ Updated path level 2: "Horde N34 Heben/Senken" → [AusfuhrHorden N31-N34 → Maschineteile → Horde N34 Heben/Senken]
    ↳ IDB naam: N34_HebenSenken
+ 🗂️ Updated path level 1: "Strömung" → [AusfuhrHorden N31-N34 → Strömung → Horde N34 Heben/Senken]
  💾 Saving program: Horde N34 Heben/Senken
  🔧 Starting normalization for source: word
  📝 Original text (first 300 chars): Symbolik IDB: N34_HebenSenken
@@ -291,9 +194,11 @@ Siehe: Horde N31 Heben/Senken
 Siehe: Horde N31 Heben/Senken
  ✅ Normalized text (first 300 chars): Symbolik IDB: N34_HebenSenken
 Siehe: Horde N31 Heben/Senken
-hook.js:608 ⚠️ Geen stappen gevonden voor Horde N34 Heben/Senken
-overrideMethod @ hook.js:608
+ ⚠️ Geen stappen gevonden voor Horde N34 Heben/Senken
+overrideMethod @ installHook.js:1
  📌 Found program: Strömungsjets 2N11-2N14-101 FB490
+ 📁 Created program with path: [AusfuhrHorden N31-N34 → Strömung] for "Strömungsjets 2N11-2N14-101"
+ 🗂️ Updated path level 2: "Strömungsjets 2N11-2N14-101" → [AusfuhrHorden N31-N34 → Strömung → Strömungsjets 2N11-2N14-101]
    ↳ IDB naam: Strömungsjets Ausfuhr
  💾 Saving program: Strömungsjets 2N11-2N14-101
  🔧 Starting normalization for source: word
@@ -370,7 +275,10 @@ SC
    - SCHRITT 5: -8)
    - SCHRITT 5: -8)
  📌 Found program: Strömungspumpe P04 FB492
+ 📁 Created program with path: [AusfuhrHorden N31-N34 → Strömung → Strömungsjets 2N11-2N14-101] for "Strömungspumpe P04"
+ 🗂️ Updated path level 2: "Strömungspumpe P04" → [AusfuhrHorden N31-N34 → Strömung → Strömungspumpe P04]
    ↳ IDB naam: Strömungspumpe P04
+ 🗂️ Updated path level 0: "Salzbad N20" → [Salzbad N20 → Strömung → Strömungspumpe P04]
  💾 Saving program: Strömungspumpe P04
  🔧 Starting normalization for source: word
  📝 Original text (first 300 chars): Symbolik IDB: Strömungspumpe P04
@@ -508,6 +416,8 @@ SCHRITT
    - SCHRITT 5: -8)
    - SCHRITT 5: -8)
  📌 Found program: Strömung Salzbad N20 FB500
+ 📁 Created program with path: [Salzbad N20] for "Strömung Salzbad N20"
+ 🗂️ Updated path level 1: "Strömung Salzbad N20" → [Salzbad N20 → Strömung Salzbad N20]
    ↳ IDB naam: Strömung N20
  💾 Saving program: Strömung Salzbad N20
  🔧 Starting normalization for source: word
@@ -580,7 +490,10 @@ Variable 1 (Geschwindigkeit MP01) = = Einst
    - RUST 0: ) = Einstellung Strömung MP02 bei Einfuhr
    - RUST 0: )
  📌 Found program: Entleeren Salzbad/Füllen Puffertank FB504
+ 📁 Created program with path: [Salzbad N20 → Strömung Salzbad N20] for "Entleeren Salzbad/Füllen Puffertank"
+ 🗂️ Updated path level 1: "Entleeren Salzbad/Füllen Puffertank" → [Salzbad N20 → Entleeren Salzbad/Füllen Puffertank]
    ↳ IDB naam: Entleeren N20
+ 🗂️ Updated path level 0: "Chargedaten" → [Chargedaten → Entleeren Salzbad/Füllen Puffertank]
  💾 Saving program: Entleeren Salzbad/Füllen Puffertank
  🔧 Starting normalization for source: word
  📝 Original text (first 300 chars): Symbolik IDB: Entleeren N20
@@ -797,6 +710,8 @@ SCHRITT 4: Start Entleeren läuf
    - SCHRITT 2: -5
    - SCHRITT 3: -6
  📌 Found program: Datenübertragung mit K5 FB550
+ 📁 Created program with path: [Chargedaten] for "Datenübertragung mit K5"
+ 🗂️ Updated path level 1: "Datenübertragung mit K5" → [Chargedaten → Datenübertragung mit K5]
  💾 Saving program: Datenübertragung mit K5
  🔧 Starting normalization for source: word
  📝 Original text (first 300 chars): Aus Zeile 1 der Produktionstabelle von K5=5 kopieren wir direkt die Chargedaten nach Salzbad 5.Das sind die Chargedaten von der aktuellen Charge die in Einfuhrrinne N10/N11 eingeströmt wird.
@@ -819,9 +734,11 @@ Besonder
 Das sind die nachfolgende Chargedaten: Chargenummer Aktuelle Chargenummer
 Käsekode Aktuelle Käsekode
 Besond
-hook.js:608 ⚠️ Geen stappen gevonden voor Datenübertragung mit K5
-overrideMethod @ hook.js:608
+ ⚠️ Geen stappen gevonden voor Datenübertragung mit K5
+overrideMethod @ installHook.js:1
  📌 Found program: Chargedaten N10 FB552
+ 📁 Created program with path: [Chargedaten → Datenübertragung mit K5] for "Chargedaten N10"
+ 🗂️ Updated path level 1: "Chargedaten N10" → [Chargedaten → Chargedaten N10]
    ↳ IDB naam: Chargedaten N10
  💾 Saving program: Chargedaten N10
  🔧 Starting normalization for source: word
@@ -874,135 +791,135 @@ RUHE: Manuell eingef
  ✅ Successfully parsed step: RUHE  - Manuell eingeführte Chargedaten bei Aufstart: Einfuhr noch nicht gestartet(Hauptprogramm Einfuhr
  📝 Created step: Object
  ✅ Successfully parsed step: RUHE  - )
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 16: "SCHRITT 2: (Freigabe neue Chargedaten kopieren nach N10?)"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 2: (Freigabe neue Chargedaten kopieren nach N10?)" (length: 57)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(57)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 2 - (Freigabe neue Chargedaten kopieren nach N10?)
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 18: "SCHRITT 3: (Neue Chargedaten kopieren nach N10)"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 3: (Neue Chargedaten kopieren nach N10)" (length: 47)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(47)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 3 - (Neue Chargedaten kopieren nach N10)
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 20: "SCHRITT 4: (Charge aktiv / Zählen Käse)"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 4: (Charge aktiv / Zählen Käse)" (length: 39)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(39)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 4 - (Charge aktiv / Zählen Käse)
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:190 🔍 Detected condition on line 21: "Anzahl Käse von Charge im N10 &gt; = Anzahl Käse (Chargedaten N10)" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 21: "Anzahl Käse von Charge im N10 &gt; = Anzahl Käse (Chargedaten N10)" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Anzahl Käse von Charge im N10 &gt; = Anzahl Käse (Chargedaten N10)"
-EnhancedLogicParser.js:190 🔍 Detected condition on line 22: "Nicht Entleeren Einfuhrrinne von K5 bis N10 (Sortentrennung NICHT" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 22: "Entleeren Einfuhrrinne von K5 bis N10 (Sortentrennung NICHT" (OR: false, NOT: true)
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 23: "SCHRITT 1: )"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 1: )" (length: 12)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(12)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 1 - )
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:190 🔍 Detected condition on line 24: "+ Einfuhrrinne entleert bis Blockierung N10 (Sortentrennung" (markers: true, indented: false, implicit: false)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 24: "Einfuhrrinne entleert bis Blockierung N10 (Sortentrennung" (OR: true, NOT: false)
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 25: "SCHRITT 2: )"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 2: )" (length: 12)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(12)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 2 - )
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 26: "SCHRITT 5: (Zurück nach SCHRITT 1)"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 5: (Zurück nach SCHRITT 1)" (length: 34)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(34)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 5 - (Zurück nach SCHRITT 1)
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 28: "SCHRITT 1: -5"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 1: -5" (length: 13)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(13)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 1 - -5
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 29: "Einfuhr beendet (Hauptprogramm Einfuhr SCHRITT ??)"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "Einfuhr beendet (Hauptprogramm Einfuhr SCHRITT ??)" (length: 50)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(50)
-EnhancedLogicParser.js:123 🎯 Step match result: null
-EnhancedLogicParser.js:190 🔍 Detected condition on line 29: "Einfuhr beendet (Hauptprogramm Einfuhr SCHRITT ??)" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 29: "Einfuhr beendet (Hauptprogramm Einfuhr SCHRITT ??)" (OR: false, NOT: false)
-EnhancedLogicParser.js:190 🔍 Detected condition on line 30: "+ Ende Produktion (K5 in" (markers: true, indented: false, implicit: false)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 30: "Ende Produktion (K5 in" (OR: true, NOT: false)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: RUHE  - ) (Komm. von K5)
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 32: "SCHRITT 6: (Kein Chargedaten mehr von K5?)"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 6: (Kein Chargedaten mehr von K5?)" (length: 42)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(42)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 6 - (Kein Chargedaten mehr von K5?)
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:190 🔍 Detected condition on line 33: "Chargenummer (Komm. von K5) = 0" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 33: "Chargenummer (Komm. von K5) = 0" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Chargenummer (Komm. von K5) = 0"
-EnhancedLogicParser.js:190 🔍 Detected condition on line 34: "Käsekode (Komm. von K5) = 0" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 34: "Käsekode (Komm. von K5) = 0" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Käsekode (Komm. von K5) = 0"
-EnhancedLogicParser.js:190 🔍 Detected condition on line 35: "Anzahl Käse (Komm. von K5) = 0" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 35: "Anzahl Käse (Komm. von K5) = 0" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Anzahl Käse (Komm. von K5) = 0"
-EnhancedLogicParser.js:190 🔍 Detected condition on line 36: "+ DT Start Einfuhr" (markers: true, indented: false, implicit: false)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 36: "DT Start Einfuhr" (OR: true, NOT: false)
-EnhancedLogicParser.js:190 🔍 Detected condition on line 37: "+ Ende Produktion (K5 in" (markers: true, indented: false, implicit: false)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 37: "Ende Produktion (K5 in" (OR: true, NOT: false)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: RUHE  - ) (Komm. von K5)
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 39: "SCHRITT 7: (Fertig)"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 7: (Fertig)" (length: 19)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(19)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 7 - (Fertig)
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:190 🔍 Detected condition on line 40: "Chargedaten OK = Chargenummer (Neue Chargedaten) &lt;&gt; 0" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 40: "Chargedaten OK = Chargenummer (Neue Chargedaten) &lt;&gt; 0" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Chargedaten OK = Chargenummer (Neue Chargedaten) &lt;&gt; 0"
-EnhancedLogicParser.js:190 🔍 Detected condition on line 41: "Besonderheit (Neue Chargedaten) = = 0,1,2" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 41: "Besonderheit (Neue Chargedaten) = = 0,1,2" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Besonderheit (Neue Chargedaten) = = 0,1,2"
-EnhancedLogicParser.js:190 🔍 Detected condition on line 46: "Neue Chargedaten = = Chargedaten (Komm. von K5)" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 46: "Neue Chargedaten = = Chargedaten (Komm. von K5)" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Neue Chargedaten = = Chargedaten (Komm. von K5)"
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 47: "SCHRITT 1: 0"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 1: 0" (length: 12)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(12)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 1 - 0
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 48: "SCHRITT 7: Chargedaten T10 = = Chargedaten (Neue Chargedaten)"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 7: Chargedaten T10 = = Chargedaten (Neue Chargedaten)" (length: 61)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(61)
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 16: "SCHRITT 2: (Freigabe neue Chargedaten kopieren nach N10?)"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 2: (Freigabe neue Chargedaten kopieren nach N10?)" (length: 57)
+ 🎯 Character codes: Array(57)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 2 - (Freigabe neue Chargedaten kopieren nach N10?)
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 18: "SCHRITT 3: (Neue Chargedaten kopieren nach N10)"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 3: (Neue Chargedaten kopieren nach N10)" (length: 47)
+ 🎯 Character codes: Array(47)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 3 - (Neue Chargedaten kopieren nach N10)
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 20: "SCHRITT 4: (Charge aktiv / Zählen Käse)"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 4: (Charge aktiv / Zählen Käse)" (length: 39)
+ 🎯 Character codes: Array(39)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 4 - (Charge aktiv / Zählen Käse)
+ 📝 Created step: Object
+ 🔍 Detected condition on line 21: "Anzahl Käse von Charge im N10 &gt; = Anzahl Käse (Chargedaten N10)" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 21: "Anzahl Käse von Charge im N10 &gt; = Anzahl Käse (Chargedaten N10)" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Anzahl Käse von Charge im N10 &gt; = Anzahl Käse (Chargedaten N10)"
+ 🔍 Detected condition on line 22: "Nicht Entleeren Einfuhrrinne von K5 bis N10 (Sortentrennung NICHT" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 22: "Entleeren Einfuhrrinne von K5 bis N10 (Sortentrennung NICHT" (OR: false, NOT: true)
+ 🔍 Trying to parse step on line 23: "SCHRITT 1: )"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 1: )" (length: 12)
+ 🎯 Character codes: Array(12)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 1 - )
+ 📝 Created step: Object
+ 🔍 Detected condition on line 24: "+ Einfuhrrinne entleert bis Blockierung N10 (Sortentrennung" (markers: true, indented: false, implicit: false)
+ 🔍 Parsing condition on line 24: "Einfuhrrinne entleert bis Blockierung N10 (Sortentrennung" (OR: true, NOT: false)
+ 🔍 Trying to parse step on line 25: "SCHRITT 2: )"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 2: )" (length: 12)
+ 🎯 Character codes: Array(12)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 2 - )
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 26: "SCHRITT 5: (Zurück nach SCHRITT 1)"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 5: (Zurück nach SCHRITT 1)" (length: 34)
+ 🎯 Character codes: Array(34)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 5 - (Zurück nach SCHRITT 1)
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 28: "SCHRITT 1: -5"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 1: -5" (length: 13)
+ 🎯 Character codes: Array(13)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 1 - -5
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 29: "Einfuhr beendet (Hauptprogramm Einfuhr SCHRITT ??)"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "Einfuhr beendet (Hauptprogramm Einfuhr SCHRITT ??)" (length: 50)
+ 🎯 Character codes: Array(50)
+ 🎯 Step match result: null
+ 🔍 Detected condition on line 29: "Einfuhr beendet (Hauptprogramm Einfuhr SCHRITT ??)" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 29: "Einfuhr beendet (Hauptprogramm Einfuhr SCHRITT ??)" (OR: false, NOT: false)
+ 🔍 Detected condition on line 30: "+ Ende Produktion (K5 in" (markers: true, indented: false, implicit: false)
+ 🔍 Parsing condition on line 30: "Ende Produktion (K5 in" (OR: true, NOT: false)
+ ✅ Successfully parsed step: RUHE  - ) (Komm. von K5)
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 32: "SCHRITT 6: (Kein Chargedaten mehr von K5?)"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 6: (Kein Chargedaten mehr von K5?)" (length: 42)
+ 🎯 Character codes: Array(42)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 6 - (Kein Chargedaten mehr von K5?)
+ 📝 Created step: Object
+ 🔍 Detected condition on line 33: "Chargenummer (Komm. von K5) = 0" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 33: "Chargenummer (Komm. von K5) = 0" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Chargenummer (Komm. von K5) = 0"
+ 🔍 Detected condition on line 34: "Käsekode (Komm. von K5) = 0" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 34: "Käsekode (Komm. von K5) = 0" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Käsekode (Komm. von K5) = 0"
+ 🔍 Detected condition on line 35: "Anzahl Käse (Komm. von K5) = 0" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 35: "Anzahl Käse (Komm. von K5) = 0" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Anzahl Käse (Komm. von K5) = 0"
+ 🔍 Detected condition on line 36: "+ DT Start Einfuhr" (markers: true, indented: false, implicit: false)
+ 🔍 Parsing condition on line 36: "DT Start Einfuhr" (OR: true, NOT: false)
+ 🔍 Detected condition on line 37: "+ Ende Produktion (K5 in" (markers: true, indented: false, implicit: false)
+ 🔍 Parsing condition on line 37: "Ende Produktion (K5 in" (OR: true, NOT: false)
+ ✅ Successfully parsed step: RUHE  - ) (Komm. von K5)
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 39: "SCHRITT 7: (Fertig)"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 7: (Fertig)" (length: 19)
+ 🎯 Character codes: Array(19)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 7 - (Fertig)
+ 📝 Created step: Object
+ 🔍 Detected condition on line 40: "Chargedaten OK = Chargenummer (Neue Chargedaten) &lt;&gt; 0" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 40: "Chargedaten OK = Chargenummer (Neue Chargedaten) &lt;&gt; 0" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Chargedaten OK = Chargenummer (Neue Chargedaten) &lt;&gt; 0"
+ 🔍 Detected condition on line 41: "Besonderheit (Neue Chargedaten) = = 0,1,2" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 41: "Besonderheit (Neue Chargedaten) = = 0,1,2" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Besonderheit (Neue Chargedaten) = = 0,1,2"
+ 🔍 Detected condition on line 46: "Neue Chargedaten = = Chargedaten (Komm. von K5)" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 46: "Neue Chargedaten = = Chargedaten (Komm. von K5)" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Neue Chargedaten = = Chargedaten (Komm. von K5)"
+ 🔍 Trying to parse step on line 47: "SCHRITT 1: 0"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 1: 0" (length: 12)
+ 🎯 Character codes: Array(12)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 1 - 0
+ 📝 Created step: Object
+ 🔍 Trying to parse step on line 48: "SCHRITT 7: Chargedaten T10 = = Chargedaten (Neue Chargedaten)"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 7: Chargedaten T10 = = Chargedaten (Neue Chargedaten)" (length: 61)
+ 🎯 Character codes: Array(61)
  🎯 Step match result: Array(4)
  ✅ Successfully parsed step: SCHRITT 7 - Chargedaten T10 = = Chargedaten (Neue Chargedaten)
  📝 Created step: Object
@@ -1083,28 +1000,28 @@ EnhancedLogicParser.js:122 🎯 Character codes: Array(61)
  🎯 Step match result: Array(4)
  ✅ Successfully parsed step: SCHRITT 2 - Besonderheit (Neue Chargedaten) &lt;&gt; 0,1,2
  📝 Created step: Object
-EnhancedLogicParser.js:190 🔍 Detected condition on line 64: "Störung: Anzahl Käse von K2 nicht OK =" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 64: "Störung: Anzahl Käse von K2 nicht OK =" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Störung: Anzahl Käse von K2 nicht OK ="
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 65: "SCHRITT 2: Anzahl Käse (Neue Chargedaten) = 0"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 2: Anzahl Käse (Neue Chargedaten) = 0" (length: 45)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(45)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 2 - Anzahl Käse (Neue Chargedaten) = 0
-EnhancedLogicParser.js:156 📝 Created step: Object
-EnhancedLogicParser.js:190 🔍 Detected condition on line 66: "Störung: Sollwert Salzungzeit ins Rezept nicht OK =" (markers: false, indented: false, implicit: true)
-EnhancedLogicParser.js:209 🔍 Parsing condition on line 66: "Störung: Sollwert Salzungzeit ins Rezept nicht OK =" (OR: false, NOT: false)
-EnhancedLogicParser.js:214 📝 Found variable assignment: "Störung: Sollwert Salzungzeit ins Rezept nicht OK ="
-EnhancedLogicParser.js:91 🔍 Trying to parse step on line 67: "SCHRITT 2: NICHT Salzungszeit ins Rezept gültig"
-EnhancedLogicParser.js:92 Available step keywords: Object
-EnhancedLogicParser.js:120 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
-EnhancedLogicParser.js:121 🎯 Testing line: "SCHRITT 2: NICHT Salzungszeit ins Rezept gültig" (length: 47)
-EnhancedLogicParser.js:122 🎯 Character codes: Array(47)
-EnhancedLogicParser.js:123 🎯 Step match result: Array(4)
-EnhancedLogicParser.js:127 ✅ Successfully parsed step: SCHRITT 2 - NICHT Salzungszeit ins Rezept gültig
-EnhancedLogicParser.js:156 📝 Created step: Object
+ 🔍 Detected condition on line 64: "Störung: Anzahl Käse von K2 nicht OK =" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 64: "Störung: Anzahl Käse von K2 nicht OK =" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Störung: Anzahl Käse von K2 nicht OK ="
+ 🔍 Trying to parse step on line 65: "SCHRITT 2: Anzahl Käse (Neue Chargedaten) = 0"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 2: Anzahl Käse (Neue Chargedaten) = 0" (length: 45)
+ 🎯 Character codes: Array(45)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 2 - Anzahl Käse (Neue Chargedaten) = 0
+ 📝 Created step: Object
+ 🔍 Detected condition on line 66: "Störung: Sollwert Salzungzeit ins Rezept nicht OK =" (markers: false, indented: false, implicit: true)
+ 🔍 Parsing condition on line 66: "Störung: Sollwert Salzungzeit ins Rezept nicht OK =" (OR: false, NOT: false)
+ 📝 Found variable assignment: "Störung: Sollwert Salzungzeit ins Rezept nicht OK ="
+ 🔍 Trying to parse step on line 67: "SCHRITT 2: NICHT Salzungszeit ins Rezept gültig"
+ Available step keywords: Object
+ 🎯 Step pattern source: ^(RUST|RUHE|IDLE|STAP|SCHRITT|STEP)(?:\s+(\d+))?:\s*(.*)$
+ 🎯 Testing line: "SCHRITT 2: NICHT Salzungszeit ins Rezept gültig" (length: 47)
+ 🎯 Character codes: Array(47)
+ 🎯 Step match result: Array(4)
+ ✅ Successfully parsed step: SCHRITT 2 - NICHT Salzungszeit ins Rezept gültig
+ 📝 Created step: Object
  📊 Parse result for Chargedaten N10: Object
  🔧 Starting normalization for source: word
  📝 Original text (first 300 chars): Symbolik IDB: Chargedaten N10
@@ -1136,83 +1053,88 @@ RUHE: Manuell eingef
    - SCHRITT 5: ohne Bedingungen
    - SCHRITT 1: (Kopieren Daten von K5 nach neue Chargedaten)
    - RUST 0: Manuell eingeführte Chargedaten bei Aufstart: Einfuhr noch nicht gestartet(Hauptprogramm Einfuhr
-enhancedWordParser.js:183   - RUST 0: )
-enhancedWordParser.js:183   - SCHRITT 2: (Freigabe neue Chargedaten kopieren nach N10?)
-enhancedWordParser.js:183   - SCHRITT 3: (Neue Chargedaten kopieren nach N10)
-enhancedWordParser.js:183   - SCHRITT 4: (Charge aktiv / Zählen Käse)
-enhancedWordParser.js:183   - SCHRITT 1: )
-enhancedWordParser.js:183   - SCHRITT 2: )
-enhancedWordParser.js:183   - SCHRITT 5: (Zurück nach SCHRITT 1)
-enhancedWordParser.js:183   - SCHRITT 1: -5
-enhancedWordParser.js:183   - RUST 0: ) (Komm. von K5)
-enhancedWordParser.js:183   - SCHRITT 6: (Kein Chargedaten mehr von K5?)
-enhancedWordParser.js:183   - RUST 0: ) (Komm. von K5)
-enhancedWordParser.js:183   - SCHRITT 7: (Fertig)
-enhancedWordParser.js:183   - SCHRITT 1: 0
-enhancedWordParser.js:183   - SCHRITT 7: Chargedaten T10 = = Chargedaten (Neue Chargedaten)
-enhancedWordParser.js:183   - SCHRITT 3: 0
-enhancedWordParser.js:183   - RUST 0: Zähler 1 (Anzahl gezählte Käse von Charge bei N10) = +1
-enhancedWordParser.js:183   - SCHRITT 4: Käse detektiert auf mitten 2T09 (Käsezähler T09
-enhancedWordParser.js:183   - SCHRITT 1: &amp;2) = 0
-enhancedWordParser.js:183   - RUST 0: [Chargenummer (Komm. von K2) = 0
-enhancedWordParser.js:183   - SCHRITT 2: [Chargenummer (Neue Chargedaten) = 0
-enhancedWordParser.js:183   - SCHRITT 2: [Käsekode (Neue Chargedaten) = 0
-enhancedWordParser.js:183   - SCHRITT 2: Besonderheit (Neue Chargedaten) &lt;&gt; 0,1,2
-enhancedWordParser.js:183   - SCHRITT 2: Anzahl Käse (Neue Chargedaten) = 0
-enhancedWordParser.js:183   - SCHRITT 2: NICHT Salzungszeit ins Rezept gültig
-enhancedWordParser.js:283 📌 Found program: Käserezept FC600
-enhancedWordParser.js:120 💾 Saving program: Käserezept
-UnifiedTextParser.js:56 🔧 Starting normalization for source: word
-UnifiedTextParser.js:57 📝 Original text (first 300 chars): Es gibt 50 Käserezepte (gespeichert in DB600).
+   - RUST 0: )
+   - SCHRITT 2: (Freigabe neue Chargedaten kopieren nach N10?)
+   - SCHRITT 3: (Neue Chargedaten kopieren nach N10)
+   - SCHRITT 4: (Charge aktiv / Zählen Käse)
+   - SCHRITT 1: )
+   - SCHRITT 2: )
+   - SCHRITT 5: (Zurück nach SCHRITT 1)
+   - SCHRITT 1: -5
+   - RUST 0: ) (Komm. von K5)
+   - SCHRITT 6: (Kein Chargedaten mehr von K5?)
+   - RUST 0: ) (Komm. von K5)
+   - SCHRITT 7: (Fertig)
+   - SCHRITT 1: 0
+   - SCHRITT 7: Chargedaten T10 = = Chargedaten (Neue Chargedaten)
+   - SCHRITT 3: 0
+   - RUST 0: Zähler 1 (Anzahl gezählte Käse von Charge bei N10) = +1
+   - SCHRITT 4: Käse detektiert auf mitten 2T09 (Käsezähler T09
+   - SCHRITT 1: &amp;2) = 0
+   - RUST 0: [Chargenummer (Komm. von K2) = 0
+   - SCHRITT 2: [Chargenummer (Neue Chargedaten) = 0
+   - SCHRITT 2: [Käsekode (Neue Chargedaten) = 0
+   - SCHRITT 2: Besonderheit (Neue Chargedaten) &lt;&gt; 0,1,2
+   - SCHRITT 2: Anzahl Käse (Neue Chargedaten) = 0
+   - SCHRITT 2: NICHT Salzungszeit ins Rezept gültig
+ 📌 Found program: Käserezept FC600
+ 📁 Created program with path: [Chargedaten] for "Käserezept"
+ 🗂️ Updated path level 0: "Käserezept" → [Käserezept → Chargedaten N10]
+ 💾 Saving program: Käserezept
+ 🔧 Starting normalization for source: word
+ 📝 Original text (first 300 chars): Es gibt 50 Käserezepte (gespeichert in DB600).
 Das Käserezept besteht aus die folgende Parameter:
 -Rezeptnummer
 -Käsekode
 -Rezeptname
 -Salzungszeit
 Mit DT Anforderung wird das selektierte Rezept (1..50) kopiert nach HMI01 (Käserezept 0). In dieses Rezept 0 können die Daten eingegeben oder geändert w
-UnifiedTextParser.js:76 ✅ Normalized text (first 300 chars): Es gibt 50 Käserezepte (gespeichert in DB600).
+ ✅ Normalized text (first 300 chars): Es gibt 50 Käserezepte (gespeichert in DB600).
 Das Käserezept besteht aus die folgende Parameter: - Rezeptnummer
 - Käsekode
 - Rezeptname
 - Salzungszeit
 Mit DT Anforderung wird das selektierte Rezept (1..50) kopiert nach HMI01 (Käserezept 0). In dieses Rezept 0 können die Daten eingegeben oder geände
-enhancedWordParser.js:137 📊 Parse result for Käserezept: Object
-UnifiedTextParser.js:56 🔧 Starting normalization for source: word
-UnifiedTextParser.js:57 📝 Original text (first 300 chars): Es gibt 50 Käserezepte (gespeichert in DB600).
+ 📊 Parse result for Käserezept: Object
+ 🔧 Starting normalization for source: word
+ 📝 Original text (first 300 chars): Es gibt 50 Käserezepte (gespeichert in DB600).
 Das Käserezept besteht aus die folgende Parameter:
 -Rezeptnummer
 -Käsekode
 -Rezeptname
 -Salzungszeit
 Mit DT Anforderung wird das selektierte Rezept (1..50) kopiert nach HMI01 (Käserezept 0). In dieses Rezept 0 können die Daten eingegeben oder geändert w
-UnifiedTextParser.js:76 ✅ Normalized text (first 300 chars): Es gibt 50 Käserezepte (gespeichert in DB600).
+ ✅ Normalized text (first 300 chars): Es gibt 50 Käserezepte (gespeichert in DB600).
 Das Käserezept besteht aus die folgende Parameter: - Rezeptnummer
 - Käsekode
 - Rezeptname
 - Salzungszeit
 Mit DT Anforderung wird das selektierte Rezept (1..50) kopiert nach HMI01 (Käserezept 0). In dieses Rezept 0 können die Daten eingegeben oder geände
-hook.js:608 ⚠️ Geen stappen gevonden voor Käserezept
-overrideMethod @ hook.js:608
-enhancedWordParser.js:283 📌 Found program: Hordedaten FB701
-enhancedWordParser.js:312   ↳ IDB naam: 2N11_Käse
-enhancedWordParser.js:312   ↳ IDB naam: 2N12_Käse
-enhancedWordParser.js:312   ↳ IDB naam: 2N13_Käse
-enhancedWordParser.js:312   ↳ IDB naam: 2N14_Käse
-enhancedWordParser.js:312   ↳ IDB naam: 2N31_Käse
-enhancedWordParser.js:312   ↳ IDB naam: 2N32_Käse
-enhancedWordParser.js:312   ↳ IDB naam: 2N33_Käse
-enhancedWordParser.js:312   ↳ IDB naam: 2N34_Käse
-enhancedWordParser.js:312   ↳ IDB naam: 2N11_schreiben	DB1011: 2N11_Hordedaten
-enhancedWordParser.js:312   ↳ IDB naam: 2N12_schreiben	DB1012: 2N12_Hordedaten
-enhancedWordParser.js:312   ↳ IDB naam: 2N13_schreiben	DB1013: 2N13_Hordedaten
-enhancedWordParser.js:312   ↳ IDB naam: 2N14_schreiben	DB1014: 2N14_Hordedaten
-enhancedWordParser.js:312   ↳ IDB naam: 2N31_schreiben	DB1031: 2N31_Hordedaten
-enhancedWordParser.js:312   ↳ IDB naam: 2N32_schreiben	DB1032: 2N32_Hordedaten
-enhancedWordParser.js:312   ↳ IDB naam: 2N33_schreiben	DB1033: 2N33_Hordedaten
-enhancedWordParser.js:312   ↳ IDB naam: 2N34_schreiben	DB1034: 2N34_Hordedaten
-enhancedWordParser.js:120 💾 Saving program: Hordedaten
-UnifiedTextParser.js:56 🔧 Starting normalization for source: word
-UnifiedTextParser.js:57 📝 Original text (first 300 chars): Käse in Horde:
+ ⚠️ Geen stappen gevonden voor Käserezept
+overrideMethod @ installHook.js:1
+ 📌 Found program: Hordedaten FB701
+ 📁 Created program with path: [Käserezept] for "Hordedaten"
+ 🗂️ Updated path level 0: "Hordedaten" → [Hordedaten]
+   ↳ IDB naam: 2N11_Käse
+   ↳ IDB naam: 2N12_Käse
+   ↳ IDB naam: 2N13_Käse
+   ↳ IDB naam: 2N14_Käse
+   ↳ IDB naam: 2N31_Käse
+   ↳ IDB naam: 2N32_Käse
+   ↳ IDB naam: 2N33_Käse
+   ↳ IDB naam: 2N34_Käse
+   ↳ IDB naam: 2N11_schreiben	DB1011: 2N11_Hordedaten
+   ↳ IDB naam: 2N12_schreiben	DB1012: 2N12_Hordedaten
+   ↳ IDB naam: 2N13_schreiben	DB1013: 2N13_Hordedaten
+   ↳ IDB naam: 2N14_schreiben	DB1014: 2N14_Hordedaten
+   ↳ IDB naam: 2N31_schreiben	DB1031: 2N31_Hordedaten
+   ↳ IDB naam: 2N32_schreiben	DB1032: 2N32_Hordedaten
+   ↳ IDB naam: 2N33_schreiben	DB1033: 2N33_Hordedaten
+   ↳ IDB naam: 2N34_schreiben	DB1034: 2N34_Hordedaten
+ 🗂️ Updated path level 0: "Salzbad 2.2: Horden 2N51/2N52/2N53" → [Salzbad 2.2: Horden 2N51/2N52/2N53]
+ 💾 Saving program: Hordedaten
+ 🔧 Starting normalization for source: word
+ 📝 Original text (first 300 chars): Käse in Horde:
 FB701: Symbolik IDB: 2N11_Käse
 FB702: Symbolik IDB: 2N12_Käse
 FB703: Symbolik IDB: 2N13_Käse
@@ -1222,7 +1144,7 @@ FB712: Symbolik IDB: 2N32_Käse
 FB713: Symbolik IDB: 2N33_Käse
 FB714: Symbolik IDB: 2N34_Käse
 Daten schreiben in Horde	Hordedaten i
-UnifiedTextParser.js:76 ✅ Normalized text (first 300 chars): Käse in Horde: FB701: Symbolik IDB: 2N11_Käse
+ ✅ Normalized text (first 300 chars): Käse in Horde: FB701: Symbolik IDB: 2N11_Käse
 FB702: Symbolik IDB: 2N12_Käse
 FB703: Symbolik IDB: 2N13_Käse
 FB704: Symbolik IDB: 2N14_Käse
@@ -1231,9 +1153,9 @@ FB712: Symbolik IDB: 2N32_Käse
 FB713: Symbolik IDB: 2N33_Käse
 FB714: Symbolik IDB: 2N34_Käse
 Daten schreiben in Horde Hordedaten i
-enhancedWordParser.js:137 📊 Parse result for Hordedaten: Object
-UnifiedTextParser.js:56 🔧 Starting normalization for source: word
-UnifiedTextParser.js:57 📝 Original text (first 300 chars): Käse in Horde:
+ 📊 Parse result for Hordedaten: Object
+ 🔧 Starting normalization for source: word
+ 📝 Original text (first 300 chars): Käse in Horde:
 FB701: Symbolik IDB: 2N11_Käse
 FB702: Symbolik IDB: 2N12_Käse
 FB703: Symbolik IDB: 2N13_Käse
@@ -1243,7 +1165,7 @@ FB712: Symbolik IDB: 2N32_Käse
 FB713: Symbolik IDB: 2N33_Käse
 FB714: Symbolik IDB: 2N34_Käse
 Daten schreiben in Horde	Hordedaten i
-UnifiedTextParser.js:76 ✅ Normalized text (first 300 chars): Käse in Horde: FB701: Symbolik IDB: 2N11_Käse
+ ✅ Normalized text (first 300 chars): Käse in Horde: FB701: Symbolik IDB: 2N11_Käse
 FB702: Symbolik IDB: 2N12_Käse
 FB703: Symbolik IDB: 2N13_Käse
 FB704: Symbolik IDB: 2N14_Käse
@@ -1252,35 +1174,37 @@ FB712: Symbolik IDB: 2N32_Käse
 FB713: Symbolik IDB: 2N33_Käse
 FB714: Symbolik IDB: 2N34_Käse
 Daten schreiben in Horde Hordedaten i
-hook.js:608 ⚠️ Geen stappen gevonden voor Hordedaten
-overrideMethod @ hook.js:608
-enhancedWordParser.js:283 📌 Found program: Handbedienung Horde 2N51 FB2100
-enhancedWordParser.js:312   ↳ IDB naam: Handbedienung Horde 2N51
-enhancedWordParser.js:120 💾 Saving program: Handbedienung Horde 2N51
-UnifiedTextParser.js:56 🔧 Starting normalization for source: word
-UnifiedTextParser.js:57 📝 Original text (first 300 chars): Symbolik IDB: Handbedienung Horde 2N51
+ ⚠️ Geen stappen gevonden voor Hordedaten
+overrideMethod @ installHook.js:1
+ 📌 Found program: Handbedienung Horde 2N51 FB2100
+ 📁 Created program with path: [Salzbad 2.2: Horden 2N51/2N52/2N53] for "Handbedienung Horde 2N51"
+ 🗂️ Updated path level 1: "Handbedienung Horde 2N51" → [Salzbad 2.2: Horden 2N51/2N52/2N53 → Handbedienung Horde 2N51]
+   ↳ IDB naam: Handbedienung Horde 2N51
+ 💾 Saving program: Handbedienung Horde 2N51
+ 🔧 Starting normalization for source: word
+ 📝 Original text (first 300 chars): Symbolik IDB: Handbedienung Horde 2N51
 Freigabe Horde 2N51 nach oben =
 [ 2LCP30-002-HS: Drucktaste Hebevorrichtung Horde 2N51 auf
 + 2LCP31-002-HS: Drucktaste Hebevorrichtung Horde 2N51 auf
 Zeit (Einschaltverzögerung) ]
 Zeit (Ausschaltverzögerung)
 NICHT Störung: Hebevorrichtung Horde 2N51 zu hoch (2N
-UnifiedTextParser.js:76 ✅ Normalized text (first 300 chars): Symbolik IDB: Handbedienung Horde 2N51
+ ✅ Normalized text (first 300 chars): Symbolik IDB: Handbedienung Horde 2N51
 Freigabe Horde 2N51 nach oben = [ 2LCP30-002-HS: Drucktaste Hebevorrichtung Horde 2N51 auf
 + 2LCP31-002-HS: Drucktaste Hebevorrichtung Horde 2N51 auf
 Zeit (Einschaltverzögerung) ]
 Zeit (Ausschaltverzögerung)
 NICHT Störung: Hebevorrichtung Horde 2N51 zu hoch (2N
-enhancedWordParser.js:137 📊 Parse result for Handbedienung Horde 2N51: Object
-UnifiedTextParser.js:56 🔧 Starting normalization for source: word
-UnifiedTextParser.js:57 📝 Original text (first 300 chars): Symbolik IDB: Handbedienung Horde 2N51
+ 📊 Parse result for Handbedienung Horde 2N51: Object
+ 🔧 Starting normalization for source: word
+ 📝 Original text (first 300 chars): Symbolik IDB: Handbedienung Horde 2N51
 Freigabe Horde 2N51 nach oben =
 [ 2LCP30-002-HS: Drucktaste Hebevorrichtung Horde 2N51 auf
 + 2LCP31-002-HS: Drucktaste Hebevorrichtung Horde 2N51 auf
 Zeit (Einschaltverzögerung) ]
 Zeit (Ausschaltverzögerung)
 NICHT Störung: Hebevorrichtung Horde 2N51 zu hoch (2N
-UnifiedTextParser.js:76 ✅ Normalized text (first 300 chars): Symbolik IDB: Handbedienung Horde 2N51
+ ✅ Normalized text (first 300 chars): Symbolik IDB: Handbedienung Horde 2N51
 Freigabe Horde 2N51 nach oben = [ 2LCP30-002-HS: Drucktaste Hebevorrichtung Horde 2N51 auf
 + 2LCP31-002-HS: Drucktaste Hebevorrichtung Horde 2N51 auf
 Zeit (Einschaltverzögerung) ]
@@ -1288,4 +1212,79 @@ Zeit (Ausschaltverzögerung)
 NICHT Störung: Hebevorrichtung Horde 2N51 zu hoch (2N
 hook.js:608 ⚠️ Geen stappen gevonden voor Handbedienung Horde 2N51
 overrideMethod @ hook.js:608
-enhancedWordParser.js:351 ✅ Word parsing complete: Object
+enhancedWordParser.js:343 🏗️ Building hierarchy with programs: 73
+enhancedWordParser.js:345   📁 Program: Hauptprogramm Einfuhr, Path: [Einfuhr → Hauptprogramme]
+enhancedWordParser.js:345   📁 Program: Selektionsprogramm Horde für Einfuhr, Path: [Einfuhr → Hauptprogramme → Hauptprogramm Einfuhr]
+enhancedWordParser.js:345   📁 Program: Einfuhrwagen T10 nach Reinigungsposition, Path: [Einfuhr → Hauptprogramme → Selektionsprogramm Horde für Einfuhr]
+enhancedWordParser.js:345   📁 Program: Reinigung Einfuhrwagen T10, Path: [Einfuhr → Hauptprogramme → Einfuhrwagen T10 nach Reinigungsposition]
+enhancedWordParser.js:345   📁 Program: Kommunikation nach K5, Path: [Einfuhr → Hauptprogramme → Reinigung Einfuhrwagen T10]
+enhancedWordParser.js:345   📁 Program: Käsezähler Anfang T10B, Path: [Einfuhr → Hauptprogramme → Kommunikation nach K5]
+enhancedWordParser.js:345   📁 Program: Käsezähler Anfang T11B, Path: [Einfuhr → Hauptprogramme → Käsezähler Anfang T10B]
+enhancedWordParser.js:345   📁 Program: Käsezähler Ende T10B, Path: [Einfuhr → Hauptprogramme → Käsezähler Anfang T11B]
+enhancedWordParser.js:345   📁 Program: Käsezähler Ende T11B, Path: [Einfuhr → Hauptprogramme → Käsezähler Ende T10B]
+enhancedWordParser.js:345   📁 Program: Sortentrennung N10, Path: [Einfuhr → Hauptprogramme → Käsezähler Ende T11B]
+enhancedWordParser.js:345   📁 Program: Sortentrennung N11, Path: [Einfuhr → Hauptprogramme → Sortentrennung N10]
+enhancedWordParser.js:345   📁 Program: Füllen Horde Reihe für Reihe, Path: [Einfuhr → Hauptprogramme → Sortentrennung N11]
+enhancedWordParser.js:345   📁 Program: N10: Blockierung Einfuhrrinne, Path: [Einfuhr → Maschineteile Einfuhr]
+enhancedWordParser.js:345   📁 Program: N11: Blockierung Einfuhrrinne, Path: [Einfuhr → Maschineteile Einfuhr → N10: Blockierung Einfuhrrinne]
+enhancedWordParser.js:345   📁 Program: T10: Füllen Horde, Path: [Einfuhr → Maschineteile Einfuhr → N11: Blockierung Einfuhrrinne]
+enhancedWordParser.js:345   📁 Program: T11: Füllen Horde, Path: [Einfuhr → Maschineteile Einfuhr → T10: Füllen Horde ]
+enhancedWordParser.js:345   📁 Program: T10: Positionieren Einfuhrwagen, Path: [Einfuhr → Maschineteile Einfuhr → T11: Füllen Horde ]
+enhancedWordParser.js:345   📁 Program: T10: Transport MT10D Einfuhrwagen, Path: [Einfuhr → Maschineteile Einfuhr → T10: Positionieren Einfuhrwagen ]
+enhancedWordParser.js:345   📁 Program: T10: Transportbahn T10A, Path: [Einfuhr → Maschineteile Einfuhr → T10: Transport MT10D Einfuhrwagen ]
+enhancedWordParser.js:345   📁 Program: T10: Transportbahn T11A, Path: [Einfuhr → Maschineteile Einfuhr → T10: Transportbahn T10A]
+enhancedWordParser.js:345   📁 Program: T10: Transportbahn Käse Anfuhr T10B, Path: [Einfuhr → Maschineteile Einfuhr → T10: Transportbahn T11A]
+enhancedWordParser.js:345   📁 Program: T10: Transportbahn Käse Anfuhr T11B, Path: [Einfuhr → Maschineteile Einfuhr → T10: Transportbahn Käse Anfuhr T10B]
+enhancedWordParser.js:345   📁 Program: T10: Transportbahn Käse Abfuhr T10B, Path: [Einfuhr → Maschineteile Einfuhr → T10: Transportbahn Käse Anfuhr T11B]
+enhancedWordParser.js:345   📁 Program: T10: Transportbahn Käse Abfuhr T11B, Path: [Einfuhr → Maschineteile Einfuhr → T10: Transportbahn Käse Abfuhr T10B]
+enhancedWordParser.js:345   📁 Program: T10: Transportbahn positionieren T10C, Path: [Einfuhr → Maschineteile Einfuhr → T10: Transportbahn Käse Abfuhr T11B]
+enhancedWordParser.js:345   📁 Program: T10: Transportbahn positionieren T11C, Path: [Einfuhr → Maschineteile Einfuhr → T10: Transportbahn positionieren T10C]
+enhancedWordParser.js:345   📁 Program: Strömung Einfuhrrinne N10/N11, Path: [Einfuhr → Niveauregelung und Strömung]
+enhancedWordParser.js:345   📁 Program: Hauptprogramm Ausfuhr, Path: [Ausfuhr → Hauptprogramme]
+enhancedWordParser.js:345   📁 Program: Selektionsprogramm Horden für Ausfuhr, Path: [Ausfuhr → Hauptprogramme → Hauptprogramm Ausfuhr]
+enhancedWordParser.js:345   📁 Program: Horden Ausfuhrtabelle füllen/entleeren, Path: [Ausfuhr → Hauptprogramme → Selektionsprogramm Horden für Ausfuhr]
+enhancedWordParser.js:345   📁 Program: Ausfuhrwagen T40 von Bad nach Reinigungsposition, Path: [Ausfuhr → Hauptprogramme → Horden Ausfuhrtabelle füllen/entleeren]
+enhancedWordParser.js:345   📁 Program: Reinigung Ausfuhrwagen T40, Path: [Ausfuhr → Hauptprogramme → Reserviert]
+enhancedWordParser.js:345   📁 Program: Käsezähler T40A, Path: [Ausfuhr → Hauptprogramme → Reinigung Ausfuhrwagen T40]
+enhancedWordParser.js:345   📁 Program: T40: Entleeren Horde Reihe für Reihe, Path: [Ausfuhr → Maschineteile Ausfuhr]
+enhancedWordParser.js:345   📁 Program: T40: Positionieren Haken T40, Path: [Ausfuhr → Maschineteile Ausfuhr → T40: Entleeren Horde Reihe für Reihe]
+enhancedWordParser.js:345   📁 Program: T40: Positionieren Ausfuhrwagen, Path: [Ausfuhr → Maschineteile Ausfuhr → T40: Positionieren Haken T40]
+enhancedWordParser.js:345   📁 Program: T40: Transport MT40D Ausfuhrwagen, Path: [Ausfuhr → Maschineteile Ausfuhr → T40: Positionieren Ausfuhrwagen]
+enhancedWordParser.js:345   📁 Program: T40: Transportbahn T40A, Path: [Ausfuhr → Maschineteile Ausfuhr → T40: Transport MT40D Ausfuhrwagen]
+enhancedWordParser.js:345   📁 Program: T40: Transportbahn T40B, Path: [Ausfuhr → Maschineteile Ausfuhr → T40: Transportbahn T40A]
+enhancedWordParser.js:345   📁 Program: Strömung Ausfuhrrinne N40, Path: [Ausfuhr → Niveauregelung und Strömung]
+enhancedWordParser.js:345   📁 Program: N21 Füllen Horde, Path: [Einfuhrhorden N21-N24 → Hauptprogramme]
+enhancedWordParser.js:345   📁 Program: N22 Füllen Horde, Path: [Einfuhrhorden N21-N24 → Hauptprogramme → N21 Füllen Horde]
+enhancedWordParser.js:345   📁 Program: N23 Füllen Horde, Path: [Einfuhrhorden N21-N24 → Hauptprogramme → N22 Füllen Horde]
+enhancedWordParser.js:345   📁 Program: N24 Füllen Horde, Path: [Einfuhrhorden N21-N24 → Hauptprogramme → N23 Füllen Horde]
+enhancedWordParser.js:345   📁 Program: N21: Umschwimmen Horde nach N31, Path: [Einfuhrhorden N21-N24 → Hauptprogramme → N24 Füllen Horde]
+enhancedWordParser.js:345   📁 Program: N22: Umschwimmen Horde nach N32, Path: [Einfuhrhorden N21-N24 → Hauptprogramme → N21: Umschwimmen Horde nach N31]
+enhancedWordParser.js:345   📁 Program: N23: Umschwimmen Horde nach N33, Path: [Einfuhrhorden N21-N24 → Hauptprogramme → N22: Umschwimmen Horde nach N32]
+enhancedWordParser.js:345   📁 Program: N24: Umschwimmen Horde nach N34, Path: [Einfuhrhorden N21-N24 → Hauptprogramme → N23: Umschwimmen Horde nach N33]
+enhancedWordParser.js:345   📁 Program: Ausschalten Horde, Path: [Einfuhrhorden N21-N24 → Hauptprogramme → N24: Umschwimmen Horde nach N34]
+enhancedWordParser.js:345   📁 Program: Horde N21 Heben/Senken, Path: [Einfuhrhorden N21-N24 → Maschineteile]
+enhancedWordParser.js:345   📁 Program: Horde N22 Heben/Senken, Path: [Einfuhrhorden N21-N24 → Maschineteile → Horde N21 Heben/Senken]
+enhancedWordParser.js:345   📁 Program: Horde N23 Heben/Senken, Path: [Einfuhrhorden N21-N24 → Maschineteile → Horde N22 Heben/Senken]
+enhancedWordParser.js:345   📁 Program: Horde N24 Heben/Senken, Path: [Einfuhrhorden N21-N24 → Maschineteile → Horde N23 Heben/Senken]
+enhancedWordParser.js:345   📁 Program: Laserkontrolle Horde N21-N24, Path: [Einfuhrhorden N21-N24 → Maschineteile → Horde N24 Heben/Senken]
+enhancedWordParser.js:345   📁 Program: Strömungsjets N21-N24-300, Path: [Einfuhrhorden N21-N24 → Strömung]
+enhancedWordParser.js:345   📁 Program: Strömungspumpe P03, Path: [Einfuhrhorden N21-N24 → Strömung → Strömungsjets N21-N24-300]
+enhancedWordParser.js:345   📁 Program: Entleeren Horde N31, Path: [AusfuhrHorden N31-N34 → Hauptprogramme]
+enhancedWordParser.js:345   📁 Program: Entleeren Horde N32, Path: [AusfuhrHorden N31-N34 → Hauptprogramme → Entleeren Horde N31]
+enhancedWordParser.js:345   📁 Program: Entleeren Horde N33, Path: [AusfuhrHorden N31-N34 → Hauptprogramme → Entleeren Horde N32]
+enhancedWordParser.js:345   📁 Program: Entleeren Horde N34, Path: [AusfuhrHorden N31-N34 → Hauptprogramme → Entleeren Horde N33]
+enhancedWordParser.js:345   📁 Program: Horde N31 Heben/Senken, Path: [AusfuhrHorden N31-N34 → Maschineteile]
+enhancedWordParser.js:345   📁 Program: Horde N32 Heben/Senken, Path: [AusfuhrHorden N31-N34 → Maschineteile → Horde N31 Heben/Senken]
+enhancedWordParser.js:345   📁 Program: Horde N33 Heben/Senken, Path: [AusfuhrHorden N31-N34 → Maschineteile → Horde N32 Heben/Senken]
+enhancedWordParser.js:345   📁 Program: Horde N34 Heben/Senken, Path: [AusfuhrHorden N31-N34 → Maschineteile → Horde N33 Heben/Senken]
+enhancedWordParser.js:345   📁 Program: Strömungsjets 2N11-2N14-101, Path: [AusfuhrHorden N31-N34 → Strömung]
+enhancedWordParser.js:345   📁 Program: Strömungspumpe P04, Path: [AusfuhrHorden N31-N34 → Strömung → Strömungsjets 2N11-2N14-101]
+enhancedWordParser.js:345   📁 Program: Strömung Salzbad N20, Path: [Salzbad N20]
+enhancedWordParser.js:345   📁 Program: Entleeren Salzbad/Füllen Puffertank, Path: [Salzbad N20 → Strömung Salzbad N20]
+enhancedWordParser.js:345   📁 Program: Datenübertragung mit K5, Path: [Chargedaten]
+enhancedWordParser.js:345   📁 Program: Chargedaten N10, Path: [Chargedaten → Datenübertragung mit K5]
+enhancedWordParser.js:345   📁 Program: Käserezept, Path: [Chargedaten]
+enhancedWordParser.js:345   📁 Program: Hordedaten, Path: [Käserezept]
+enhancedWordParser.js:345   📁 Program: Handbedienung Horde 2N51, Path: [Salzbad 2.2: Horden 2N51/2N52/2N53]
+enhancedWordParser.js:350 🏗️ Built hierarchy: Object
+enhancedWordParser.js:362 ✅ Word parsing complete: Object
