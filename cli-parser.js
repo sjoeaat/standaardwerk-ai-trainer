@@ -12,6 +12,7 @@ import { join, dirname, basename, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { UnifiedTextParser } from './src/core/UnifiedTextParser.js';
 import { FlexibleParser } from './src/core/FlexibleParser.js';
+import { AdvancedParser } from './src/core/AdvancedParser.js';
 import { defaultSyntaxRules } from './src/config/syntaxRules.js';
 import { DEFAULT_VALIDATION_RULES } from './src/config/validationRules.js';
 import { DocxParser } from './src/core/DocxParser.js';
@@ -23,10 +24,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  * CLI Parser Class - Main application logic
  */
 class CLIParser {
-  constructor() {
+  constructor(parserType = 'flexible') {
     this.syntaxRules = defaultSyntaxRules;
     this.validationRules = DEFAULT_VALIDATION_RULES;
-    this.parser = new FlexibleParser(this.syntaxRules, this.validationRules);
+    
+    // Initialize parser based on type
+    if (parserType === 'advanced') {
+      this.parser = new AdvancedParser(this.syntaxRules, this.validationRules);
+    } else if (parserType === 'flexible') {
+      this.parser = new FlexibleParser(this.syntaxRules, this.validationRules);
+    } else {
+      this.parser = new UnifiedTextParser(this.syntaxRules, this.validationRules);
+    }
+    
     this.processedFiles = [];
     this.trainingData = [];
     this.pendingSuggestions = [];

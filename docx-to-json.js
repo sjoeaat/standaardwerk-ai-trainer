@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 import { UnifiedTextParser } from './src/core/UnifiedTextParser.js';
 import { EnhancedParser } from './src/core/EnhancedParser.js';
 import { FlexibleParser } from './src/core/FlexibleParser.js';
+import { AdvancedParser } from './src/core/AdvancedParser.js';
 import { defaultSyntaxRules } from './src/config/syntaxRules.js';
 import { DEFAULT_VALIDATION_RULES } from './src/config/validationRules.js';
 import { DocxParser } from './src/core/DocxParser.js';
@@ -53,6 +54,9 @@ class DocxToJsonConverter {
     } else if (parserType === 'enhanced') {
       this.parser = new EnhancedParser(defaultSyntaxRules, DEFAULT_VALIDATION_RULES);
       console.log('🎯 Using EnhancedParser (rule-based with training support)');
+    } else if (parserType === 'advanced') {
+      this.parser = new AdvancedParser(defaultSyntaxRules, DEFAULT_VALIDATION_RULES);
+      console.log('🚀 Using AdvancedParser (industrial program structure support)');
     } else {
       this.parser = new UnifiedTextParser(defaultSyntaxRules, DEFAULT_VALIDATION_RULES);
       console.log('🔄 Using UnifiedTextParser (original)');
@@ -369,7 +373,7 @@ function printUsage() {
   console.log('  --input <file>       Input DOCX file (required)');
   console.log('  --output <file>      Output JSON file (default: training-data.json)');
   console.log('  --format <format>    Output format: suggestions|structured (default: suggestions)');
-  console.log('  --parser <type>      Parser type: flexible|enhanced|unified (default: flexible)');
+  console.log('  --parser <type>      Parser type: flexible|enhanced|advanced|unified (default: flexible)');
   console.log('  --help, -h          Show this help message');
   console.log('');
   console.log('Examples:');
