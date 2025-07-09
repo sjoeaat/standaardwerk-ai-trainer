@@ -291,6 +291,8 @@ export async function parseWordDocument(file, syntaxRules, existingProgramRegist
           idbName: null,
           rawContent: ''
         };
+        
+        console.log(`📁 Created program with path: [${currentProgram.path.join(' → ')}] for "${currentProgram.name}"`);
 
         contentBuffer = [];
         collectingContent = true;
@@ -321,7 +323,9 @@ export async function parseWordDocument(file, syntaxRules, existingProgramRegist
       if (item.type.startsWith('h')) {
         const lvl = parseInt(item.type[1], 10) - 1;
         if (lvl >= 0 && lvl < currentPath.length) {
-          currentPath[lvl] = txt.split('\t')[0];
+          const pathSegment = txt.split('\t')[0];
+          currentPath[lvl] = pathSegment;
+          console.log(`🗂️ Updated path level ${lvl}: "${pathSegment}" → [${currentPath.filter(p => p).join(' → ')}]`);
           for (let j = lvl + 1; j < currentPath.length; j++) {
             currentPath[j] = null;
           }
@@ -335,8 +339,15 @@ export async function parseWordDocument(file, syntaxRules, existingProgramRegist
       saveCurrentProgram();
     }
 
+    // Debug: Log alle programma's voor bouw van hierarchy
+    console.log('🏗️ Building hierarchy with programs:', result.programs.length);
+    result.programs.forEach(prog => {
+      console.log(`  📁 Program: ${prog.name}, Path: [${prog.folderPath?.join(' → ') || 'NO PATH'}]`);
+    });
+
     // Bouw hierarchy
     result.hierarchy = buildFolderTree(result.programs);
+    console.log('🏗️ Built hierarchy:', result.hierarchy);
 
     // Voeg globale statistieken toe
     result.statistics = {
