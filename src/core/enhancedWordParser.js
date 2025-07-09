@@ -140,6 +140,9 @@ export async function parseWordDocument(file, syntaxRules, existingProgramRegist
         timers: fullParseResult.timers.length
       });
       
+      // Get processed content from parser normalization
+      const processedContent = parser.normalizeText(currentProgram.rawContent, 'word');
+      
       // Merge de volledige parse resultaten met het programma
       currentProgram = {
         ...currentProgram,
@@ -166,7 +169,7 @@ export async function parseWordDocument(file, syntaxRules, existingProgramRegist
         
         // Originele content behouden voor debug
         rawContent: currentProgram.rawContent.trim(),
-        processedContent: standardwerkContent,
+        processedContent: processedContent,
         
         // Folder info
         folderPath: currentProgram.path,
