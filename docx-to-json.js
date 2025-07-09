@@ -10,6 +10,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname, basename, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { UnifiedTextParser } from './src/core/UnifiedTextParser.js';
+import { EnhancedParser } from './src/core/EnhancedParser.js';
 import { defaultSyntaxRules } from './src/config/syntaxRules.js';
 import { DEFAULT_VALIDATION_RULES } from './src/config/validationRules.js';
 import { DocxParser } from './src/core/DocxParser.js';
@@ -30,7 +31,8 @@ for (let i = 0; i < args.length; i += 2) {
 const defaultOptions = {
   input: null,
   output: 'training-data.json',
-  format: 'suggestions' // or 'structured'
+  format: 'suggestions', // or 'structured'
+  parser: 'enhanced' // or 'unified'
 };
 
 // Merge options
@@ -40,15 +42,23 @@ const config = { ...defaultOptions, ...options };
  * DOCX to JSON Converter
  */
 class DocxToJsonConverter {
-  constructor() {
-    this.parser = new UnifiedTextParser(defaultSyntaxRules, DEFAULT_VALIDATION_RULES);
+  constructor(parserType = 'enhanced') {
     this.docxParser = new DocxParser();
+    
+    // Choose parser based on type
+    if (parserType === 'enhanced') {
+      this.parser = new EnhancedParser(defaultSyntaxRules, DEFAULT_VALIDATION_RULES);
+      console.log('🎯 Using EnhancedParser (rule-based with training support)');
+    } else {
+      this.parser = new UnifiedTextParser(defaultSyntaxRules, DEFAULT_VALIDATION_RULES);
+      console.log('🔄 Using UnifiedTextParser (original)');
+    }
   }
 
   /**
    * Convert DOCX file to JSON training data
    */
-  async convertDocxToJson(inputPath, outputPath, format = 'suggestions') {
+  async convertDocxToJson(inputPath, outputPath, format = 'suggestions', parserType = 'enhanced') {
     console.log(`🔄 Converting ${inputPath} to JSON training data...`);
     
     try {
@@ -62,8 +72,18 @@ class DocxToJsonConverter {
       console.log(`📊 Parsing results:`);
       console.log(`  Steps: ${parseResult.steps.length}`);
       console.log(`  Variables: ${parseResult.variables.length}`);
+      console.log(`  Conditions: ${parseResult.conditions.length}`);
+      console.log(`  Cross-references: ${parseResult.crossReferences.length}`);
       console.log(`  Errors: ${parseResult.errors.length}`);
       console.log(`  Warnings: ${parseResult.warnings.length}`);
+      
+      // Show parser metrics if available
+      if (this.parser.getMetrics) {
+        const metrics = this.parser.getMetrics();
+        console.log(`  Parser efficiency: ${(metrics.parsingEfficiency * 100).toFixed(1)}%`);
+        console.log(`  Cross-refs detected: ${metrics.crossReferences}`);
+        console.log(`  Timers detected: ${metrics.timers}`);
+      }
       
       // Generate training data in requested format
       let trainingData;
@@ -309,11 +329,12 @@ async function main() {
 
   try {
     // Convert DOCX to JSON
-    const converter = new DocxToJsonConverter();
+    const converter = new DocxToJsonConverter(config.parser);
     const trainingData = await converter.convertDocxToJson(
       config.input,
       config.output,
-      config.format
+      config.format,
+      config.parser
     );
 
     console.log('');
@@ -344,6 +365,7 @@ function printUsage() {
   console.log('  --input <file>       Input DOCX file (required)');
   console.log('  --output <file>      Output JSON file (default: training-data.json)');
   console.log('  --format <format>    Output format: suggestions|structured (default: suggestions)');
+  console.log('  --parser <type>      Parser type: enhanced|unified (default: enhanced)');
   console.log('  --help, -h          Show this help message');
   console.log('');
   console.log('Examples:');
