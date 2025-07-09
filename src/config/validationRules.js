@@ -20,14 +20,26 @@ export const DEFAULT_VALIDATION_RULES = {
         /^([^=]+)\s*=$/,
         /^(Freigabe|Start|Aktuell|Aktuelle)\s+(.+)\s*=$/,
         /^(Einfuhr|Ausfuhr|Füllen|Entleeren|Umschwimmen|Freigabe)\s+(.+)\s*=$/,
-        /^(Wartereihe|Beschäftigt|Gestartet|Fertig|Aktiv)\s+(.+)\s*=$/
+        /^(Wartereihe|Beschäftigt|Gestartet|Fertig|Aktiv)\s+(.+)\s*=$/,
+        // Detect "Freigabe" phrases
+        /^[^=]*\b(Freigabe|Release|Enable|Enabled)\b[^=]*\s*=\s*$/,
+        // Detect "von" phrases (like "Freigabe von Puffertanks")
+        /^[^=]*\b(von|of|from)\b[^=]*\s*=\s*$/,
+        // Detect common auxiliary marker keywords
+        /^[^=]*\b(Bereit|Ready|Aktiv|Active|Verfügbar|Available|Besetzt|Occupied)\b[^=]*\s*=\s*$/
       ],
       excludePatterns: [
         /^STORING:/,
         /^MELDING:/,
         /^TIJD\s*=/,
         /^Teller\s*=/,
-        /^Variabele\s*=/
+        /^Variabele\s*=/,
+        // Exclude störung patterns from hulpmerker
+        /\b(Störung|Fault|Alarm|Error|Fehler)\b/i,
+        // Exclude melding patterns from hulpmerker (but allow "Info" in specific contexts)
+        /\b(Melding|Meldung|Message|Nachricht)\b/i,
+        // Don't exclude "Info" alone as it could be part of other contexts
+        /\b(Info|Information)\b.*\b(Display|Screen|Monitor|Anzeige)\b/i
       ],
       implementation: {
         type: "coil", // Default implementation
@@ -49,7 +61,13 @@ export const DEFAULT_VALIDATION_RULES = {
       patterns: [
         /^STORING:\s*[^=]+\s*=\s*$/,
         /^STÖRUNG:\s*[^=]+\s*=\s*$/,
-        /^FAULT:\s*[^=]+\s*=\s*$/
+        /^FAULT:\s*[^=]+\s*=\s*$/,
+        // Detect variables containing "Störung", "Fault", "Alarm", "Error" (with or without =)
+        /^[^=]*\b(Störung|Fault|Alarm|Error|Fehler)\b[^=]*\s*(=\s*)?$/,
+        // Detect technical codes with störung indicators
+        /^[A-Z0-9]+\s+(Störung|Fault|Alarm|Error|Fehler)\s*(=\s*)?$/,
+        // Detect störung in German text
+        /^[^=]*\b(störung|fault|alarm|error|fehler)\b[^=]*\s*(=\s*)?$/i
       ],
       implementation: {
         type: "coil",
@@ -70,7 +88,13 @@ export const DEFAULT_VALIDATION_RULES = {
       patterns: [
         /^MELDING:\s*[^=]+\s*=\s*$/,
         /^MELDUNG:\s*[^=]+\s*=\s*$/,
-        /^MESSAGE:\s*[^=]+\s*=\s*$/
+        /^MESSAGE:\s*[^=]+\s*=\s*$/,
+        // Detect variables containing "Melding", "Meldung", "Message", "Nachricht" (with or without =)
+        /^[^=]*\b(Melding|Meldung|Message|Nachricht|Info|Information)\b[^=]*\s*(=\s*)?$/,
+        // Detect technical codes with message indicators
+        /^[A-Z0-9]+\s+(Melding|Meldung|Message|Nachricht)\s*(=\s*)?$/,
+        // Detect melding in German/Dutch text
+        /^[^=]*\b(melding|meldung|message|nachricht)\b[^=]*\s*(=\s*)?$/i
       ],
       implementation: {
         type: "coil",

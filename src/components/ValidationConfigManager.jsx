@@ -22,6 +22,7 @@ import {
   importValidationRules, 
   DEFAULT_VALIDATION_RULES 
 } from '../config/validationRules.js';
+import { PatternGenerator } from '../core/PatternGenerator.js';
 
 const ValidationConfigManager = ({ 
   validationRules, 
@@ -33,7 +34,9 @@ const ValidationConfigManager = ({
   const [editingGroup, setEditingGroup] = useState(null);
   const [importStatus, setImportStatus] = useState(null);
   const [exportStatus, setExportStatus] = useState(null);
+  const [patternGenerationStatus, setPatternGenerationStatus] = useState(null);
   const fileInputRef = useRef(null);
+  const trainingDataRef = useRef(null);
 
   const handleExportRules = () => {
     try {
@@ -112,6 +115,73 @@ const ValidationConfigManager = ({
       onUpdateRules(DEFAULT_VALIDATION_RULES);
       setImportStatus('reset');
       setTimeout(() => setImportStatus(null), 3000);
+    }
+  };
+
+  const handleGeneratePatterns = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setPatternGenerationStatus('loading');
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const trainingData = JSON.parse(e.target.result);
+          
+          // Initialize pattern generator
+          const generator = new PatternGenerator({
+            minFrequency: 3,
+            minPrecision: 0.7,
+            minRecall: 0.7,
+            maxPatterns: 5
+          });
+          
+          // Load training data
+          const allResults = [];
+          if (trainingData.bestSuggestions) {
+            allResults.push({
+              suggestions: trainingData.bestSuggestions
+            });
+          }
+          
+          generator.loadTrainingData(allResults);
+          
+          // Generate patterns
+          const patterns = await generator.generateAllPatterns();
+          
+          // Convert to validation rules format
+          const newRules = { ...validationRules };
+          
+          patterns.forEach((groupPatterns, groupType) => {
+            if (newRules.groups[groupType]) {
+              // Add generated patterns to existing group
+              const regexPatterns = groupPatterns.map(p => new RegExp(p.pattern, 'i'));
+              newRules.groups[groupType].patterns = [
+                ...newRules.groups[groupType].patterns,
+                ...regexPatterns
+              ];
+            }
+          });
+          
+          // Update rules
+          onUpdateRules(newRules);
+          
+          setPatternGenerationStatus('success');
+          setTimeout(() => setPatternGenerationStatus(null), 5000);
+          
+        } catch (error) {
+          console.error('Pattern generation error:', error);
+          setPatternGenerationStatus('error');
+          setTimeout(() => setPatternGenerationStatus(null), 5000);
+        }
+      };
+      reader.readAsText(file);
+    } catch (error) {
+      console.error('File reading error:', error);
+      setPatternGenerationStatus('error');
+      setTimeout(() => setPatternGenerationStatus(null), 5000);
     }
   };
 
@@ -228,6 +298,14 @@ const ValidationConfigManager = ({
             Export
           </button>
           <button
+            onClick={() => trainingDataRef.current?.click()}
+            className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+            disabled={patternGenerationStatus === 'loading'}
+          >
+            <Settings className="w-4 h-4" />
+            {patternGenerationStatus === 'loading' ? 'Generating...' : 'Generate Patterns'}
+          </button>
+          <button
             onClick={handleResetToDefault}
             className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
           >
@@ -257,6 +335,21 @@ const ValidationConfigManager = ({
         }`}>
           {exportStatus === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
           {exportStatus === 'success' ? 'Configuration exported successfully!' : 'Error exporting configuration!'}
+        </div>
+      )}
+
+      {patternGenerationStatus && (
+        <div className={`mb-4 p-3 rounded flex items-center gap-2 ${
+          patternGenerationStatus === 'success' ? 'bg-green-100 text-green-800' : 
+          patternGenerationStatus === 'loading' ? 'bg-blue-100 text-blue-800' :
+          'bg-red-100 text-red-800'
+        }`}>
+          {patternGenerationStatus === 'success' ? <CheckCircle className="w-4 h-4" /> : 
+           patternGenerationStatus === 'loading' ? <Settings className="w-4 h-4 animate-spin" /> :
+           <AlertCircle className="w-4 h-4" />}
+          {patternGenerationStatus === 'success' ? 'Patterns generated and applied successfully!' : 
+           patternGenerationStatus === 'loading' ? 'Generating patterns from training data...' :
+           'Error generating patterns!'}
         </div>
       )}
 
@@ -300,12 +393,19 @@ const ValidationConfigManager = ({
 
       {activeTab === 'registry' && renderProgramRegistry()}
 
-      {/* Hidden File Input */}
+      {/* Hidden File Inputs */}
       <input
         ref={fileInputRef}
         type="file"
         accept=".json"
         onChange={handleImportRules}
+        className="hidden"
+      />
+      <input
+        ref={trainingDataRef}
+        type="file"
+        accept=".json"
+        onChange={handleGeneratePatterns}
         className="hidden"
       />
     </div>
