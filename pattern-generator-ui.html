@@ -144,6 +144,37 @@
             color: #666;
             margin-top: 5px;
         }
+
+        .file-selector {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #e1e5e9;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .file-selector:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .file-path {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            word-break: break-all;
+            background: #f8f9fa;
+            padding: 5px 8px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .file-path.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -153,14 +184,25 @@
         <form id="patternForm">
             <div class="form-group">
                 <label for="inputFile">Training Data (JSON):</label>
-                <input type="file" id="inputFile" accept=".json" required>
+                <input type="file" id="inputFile" accept=".json" required webkitdirectory="false">
                 <div class="help-text">Select training-report.json file</div>
+                <div id="inputPath" class="file-path"></div>
             </div>
 
             <div class="form-group">
-                <label for="outputPath">Output Filename:</label>
-                <input type="text" id="outputPath" value="validation-config.json" placeholder="validation-config.json">
-                <div class="help-text">Generated patterns will be saved to this file</div>
+                <label for="outputDir">Output Directory:</label>
+                <input type="file" id="outputDir" webkitdirectory="true" style="display: none;">
+                <div class="file-selector" onclick="document.getElementById('outputDir').click();">
+                    <span id="outputDirText">📁 Select output directory...</span>
+                </div>
+                <div class="help-text">Choose where to save the generated files</div>
+                <div id="outputPath" class="file-path"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="outputFilename">Output Filename:</label>
+                <input type="text" id="outputFilename" value="validation-config.json" placeholder="validation-config.json">
+                <div class="help-text">Name for the generated validation config file</div>
             </div>
 
             <div class="options-grid">
@@ -202,6 +244,10 @@
         const generateBtn = document.getElementById('generateBtn');
         const status = document.getElementById('status');
         const inputFile = document.getElementById('inputFile');
+        const outputDir = document.getElementById('outputDir');
+        const outputDirText = document.getElementById('outputDirText');
+        const inputPath = document.getElementById('inputPath');
+        const outputPath = document.getElementById('outputPath');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -212,9 +258,14 @@
                 return;
             }
 
+            const outputDirFiles = outputDir.files;
+            const outputDirectory = outputDirFiles.length > 0 ? outputDirFiles[0].webkitRelativePath.split('/')[0] : '';
+            
             const formData = {
                 inputFile: file,
-                outputPath: document.getElementById('outputPath').value,
+                inputPath: file.webkitRelativePath || file.name,
+                outputDirectory: outputDirectory,
+                outputFilename: document.getElementById('outputFilename').value,
                 minFrequency: parseInt(document.getElementById('minFrequency').value),
                 maxPatterns: parseInt(document.getElementById('maxPatterns').value),
                 minPrecision: parseFloat(document.getElementById('minPrecision').value),
@@ -230,17 +281,14 @@
                 const trainingData = JSON.parse(fileContent);
                 
                 // Generate CLI command
-                const command = buildCliCommand(formData, file.name);
-                
-                // Show CLI command to user
-                showStatus(`Run this command in your terminal:\\n\\n${command}`, 'success');
+                const command = buildCliCommand(formData);
                 
                 // Copy command to clipboard if possible
                 if (navigator.clipboard) {
                     await navigator.clipboard.writeText(command);
-                    setTimeout(() => {
-                        showStatus(`Command copied to clipboard!\\n\\nRun: ${command}`, 'success');
-                    }, 1000);
+                    showStatus(`✅ Command copied to clipboard!\\n\\nPaste and run in your terminal`, 'success');
+                } else {
+                    showStatus(`Run this command in your terminal:\\n\\n${command}`, 'success');
                 }
                 
             } catch (error) {
@@ -250,13 +298,22 @@
             }
         });
 
-        function buildCliCommand(formData, filename) {
+        function buildCliCommand(formData) {
             const isWindows = navigator.platform.includes('Win');
             const pathSeparator = isWindows ? '\\\\' : '/';
             
+            // Build input path
+            const inputPath = formData.inputPath;
+            
+            // Build output path
+            let outputPath = formData.outputFilename;
+            if (formData.outputDirectory) {
+                outputPath = formData.outputDirectory + pathSeparator + formData.outputFilename;
+            }
+            
             let command = `node generate-patterns.js`;
-            command += ` --input "${filename}"`;
-            command += ` --output "${formData.outputPath}"`;
+            command += ` --input "${inputPath}"`;
+            command += ` --output "${outputPath}"`;
             command += ` --minFrequency ${formData.minFrequency}`;
             command += ` --maxPatterns ${formData.maxPatterns}`;
             command += ` --minPrecision ${formData.minPrecision}`;
@@ -296,14 +353,19 @@
         inputFile.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                const info = document.createElement('div');
-                info.className = 'file-info';
-                info.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-                
-                const existing = inputFile.parentNode.querySelector('.file-info');
-                if (existing) existing.remove();
-                
-                inputFile.parentNode.appendChild(info);
+                inputPath.textContent = `Path: ${file.webkitRelativePath || file.name}`;
+                inputPath.classList.add('show');
+            }
+        });
+
+        // Output directory selection
+        outputDir.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                const dirPath = files[0].webkitRelativePath.split('/')[0];
+                outputDirText.textContent = `📁 ${dirPath}`;
+                outputPath.textContent = `Path: ${dirPath}`;
+                outputPath.classList.add('show');
             }
         });
     </script>
