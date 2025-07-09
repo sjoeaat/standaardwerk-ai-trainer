@@ -22,7 +22,7 @@ import {
   importValidationRules, 
   DEFAULT_VALIDATION_RULES 
 } from '../config/validationRules.js';
-import { PatternGenerator } from '../core/PatternGenerator.js';
+// import { PatternGenerator } from '../core/PatternGenerator.js'; // Server-side only
 
 const ValidationConfigManager = ({ 
   validationRules, 
@@ -128,48 +128,10 @@ const ValidationConfigManager = ({
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
-          const trainingData = JSON.parse(e.target.result);
-          
-          // Initialize pattern generator
-          const generator = new PatternGenerator({
-            minFrequency: 3,
-            minPrecision: 0.7,
-            minRecall: 0.7,
-            maxPatterns: 5
-          });
-          
-          // Load training data
-          const allResults = [];
-          if (trainingData.bestSuggestions) {
-            allResults.push({
-              suggestions: trainingData.bestSuggestions
-            });
-          }
-          
-          generator.loadTrainingData(allResults);
-          
-          // Generate patterns
-          const patterns = await generator.generateAllPatterns();
-          
-          // Convert to validation rules format
-          const newRules = { ...validationRules };
-          
-          patterns.forEach((groupPatterns, groupType) => {
-            if (newRules.groups[groupType]) {
-              // Add generated patterns to existing group
-              const regexPatterns = groupPatterns.map(p => new RegExp(p.pattern, 'i'));
-              newRules.groups[groupType].patterns = [
-                ...newRules.groups[groupType].patterns,
-                ...regexPatterns
-              ];
-            }
-          });
-          
-          // Update rules
-          onUpdateRules(newRules);
-          
-          setPatternGenerationStatus('success');
-          setTimeout(() => setPatternGenerationStatus(null), 5000);
+          // Simple client-side pattern generation for demo
+          setPatternGenerationStatus('error');
+          alert('Pattern generation werkt alleen via CLI:\n\nRun: node generate-patterns.js --input documentatie\\auto-training-results-v2\\training-report.json\n\nDan kun je de gegenereerde validation-config.json importeren.');
+          setTimeout(() => setPatternGenerationStatus(null), 3000);
           
         } catch (error) {
           console.error('Pattern generation error:', error);
