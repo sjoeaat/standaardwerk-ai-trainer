@@ -176,20 +176,49 @@ export class UnifiedTextParser {
       let line = lines[i];
       
       // Check if this line contains embedded SCHRITT/STAP/STEP keywords - VERBETERD: flexibeler
+      // KRITIEKE FIX: Voorkom splitsen van programma-verwijzingen binnen voorwaarden
       const schrittMatch = line.match(/^(.+?)\s+(SCHRITT|STAP|STEP)\s*(\d+)\s*[:\(\.]?\s*(.*)$/i);
       if (schrittMatch && !line.trim().startsWith('SCHRITT') && !line.trim().startsWith('STAP') && !line.trim().startsWith('STEP')) {
+        // Check of dit een programma-verwijzing is (tussen haakjes of na +)
+        const before = schrittMatch[1];
+        const isInParentheses = /\([^)]*$/.test(before.trim());
+        const isAfterPlus = /\+\s*$/.test(before.trim());
+        
+        if (isInParentheses || isAfterPlus) {
+          // Dit is een programma-verwijzing, NIET splitsen
+          normalizedLines.push(line);
+          continue;
+        }
+        
         // Split the line: before part + new line with SCHRITT
-        const [, before, keyword, number, after] = schrittMatch;
+        const [, , keyword, number, after] = schrittMatch;
         normalizedLines.push(before.trim());
         normalizedLines.push(`${keyword.toUpperCase()} ${number}: ${after}`);
         continue;
       }
       
       // Check if this line contains embedded RUST/RUHE/IDLE keywords - VERBETERD: flexibeler
+      // KRITIEKE FIX: Voorkom splitsen van programma-verwijzingen binnen voorwaarden
       const rustMatch = line.match(/^(.+?)\s+(RUST|RUHE|IDLE)\s*[:\(\.]?\s*(.*)$/i);
       if (rustMatch && !line.trim().startsWith('RUST') && !line.trim().startsWith('RUHE') && !line.trim().startsWith('IDLE')) {
+        // Check of dit een programma-verwijzing is
+        const before = rustMatch[1];
+        const keyword = rustMatch[2];
+        const after = rustMatch[3];
+        
+        // Verschillende patronen voor programma-verwijzingen:
+        const isInParentheses = /\([^)]*$/.test(before.trim());
+        const isAfterPlus = /\+\s*$/.test(before.trim());
+        const isAtEndOfCondition = after.trim() === '' && /\)$/.test(before.trim());
+        const containsProgramRef = /\([^)]*:[^)]*\)/.test(before);
+        
+        if (isInParentheses || isAfterPlus || isAtEndOfCondition || containsProgramRef) {
+          // Dit is een programma-verwijzing, NIET splitsen
+          normalizedLines.push(line);
+          continue;
+        }
+        
         // Split the line: before part + new line with RUST
-        const [, before, keyword, after] = rustMatch;
         normalizedLines.push(before.trim());
         normalizedLines.push(`${keyword.toUpperCase()}: ${after}`);
         continue;
