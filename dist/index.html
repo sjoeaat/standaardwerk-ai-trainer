@@ -1,14 +1,22 @@
-<!-- index.html -->
 <!doctype html>
-<html lang="nl">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Standaardwerk Compiler</title>
-    <script type="module" crossorigin src="/assets/index-DPn7OZZ5.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-Uh8xQx4h.css">
+
+    <!-- 
+      CORRECTIE: Laad mammoth.js direct vanuit een CDN.
+      Dit maakt de bibliotheek globaal beschikbaar via window.mammoth
+    -->
+    <script src="https://unpkg.com/mammoth@1.7.0/mammoth.browser.min.js"></script>
+
+    <script type="module" crossorigin src="/assets/index-6fca6165.js"></script>
+    <link rel="stylesheet" href="/assets/index-4b50a65d.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"></div>
+    
   </body>
 </html>

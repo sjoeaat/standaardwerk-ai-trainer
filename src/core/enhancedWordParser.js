@@ -7,7 +7,7 @@
 
 import * as mammoth from 'mammoth';
 import { buildFolderTree } from './hierarchyBuilder';
-import { parseStandaardwerk } from './parser';
+import { StandardWorkParser } from './StandardWorkParser';
 
 // Regex patterns
 const PROGRAM_TITLE_REGEX = /^(.*?)\s+(FB|FC)(\d+)/i;
@@ -31,16 +31,15 @@ function generateIdbName(programName) {
   return name.replace(/[^a-zA-Z0-9_]/g, '') || 'Generated_IDB';
 }
 
-// Helper: converteer Word content naar standaardwerk format (MINIMAL TRANSFORMATION)
-// PROBLEEM: De conversie functie is te agressief
-// We moeten de originele structuur beter respecteren
+// Helper: converteer Word content naar standaardwerk format (STRUCTURE PRESERVING)
+// VERBETERD: Minimale transformatie die Duitse tekst structuur behoudt
 
 function convertToStandaardwerkFormat(rawContent, syntaxRules) {
   console.log('🔄 Converting content - RAW INPUT:');
   console.log(rawContent);
   console.log('---END RAW INPUT---');
   
-  // NIEUW: Splits op nieuwe regels maar BEHOUD lege regels en tabs
+  // Splits op nieuwe regels maar BEHOUD exacte formattering
   const lines = rawContent.split(/\r?\n/);
   const outputLines = [];
   
@@ -51,44 +50,48 @@ function convertToStandaardwerkFormat(rawContent, syntaxRules) {
     // Log elke regel voor debug
     console.log(`Regel ${i}: [${line}]`);
     
-    // Check voor STAP of RUST keywords
-    let isStepHeader = false;
+    // Skip lege regels
+    if (!trimmedLine) {
+      outputLines.push('');
+      continue;
+    }
     
-    // Check RUST
+    // Check voor RUHE pattern (Duitse tekst gebruikt vaak haakjes)
+    let isRestHeader = false;
     for (const keyword of syntaxRules.stepKeywords.rest) {
-      if (trimmedLine.toUpperCase().startsWith(keyword.toUpperCase())) {
-        isStepHeader = true;
-        console.log(`  -> RUST gevonden: ${trimmedLine}`);
+      // Match beide: "RUHE (beschrijving)" EN "RUHE: beschrijving"
+      const regex = new RegExp(`^${keyword}\\s*[:\\(]`, 'i');
+      if (regex.test(trimmedLine)) {
+        isRestHeader = true;
+        console.log(`  -> RUHE gevonden: ${trimmedLine}`);
+        // Normaliseer naar standaard format voor parser
+        const description = trimmedLine.replace(new RegExp(`^${keyword}\\s*[:\\(]\\s*`, 'i'), '').replace(/\)$/, '');
+        outputLines.push(`${keyword.toUpperCase()}: ${description}`);
         break;
       }
     }
     
-    // Check STAP (met nummer)
-    if (!isStepHeader) {
+    // Check voor SCHRITT pattern (Duitse stappen)
+    if (!isRestHeader) {
+      let isStepHeader = false;
       for (const keyword of syntaxRules.stepKeywords.step) {
-        const regex = new RegExp(`^${keyword}\\s+\\d+`, 'i');
-        if (regex.test(trimmedLine)) {
+        const regex = new RegExp(`^${keyword}\\s+(\\d+)\\s*[:\\s]`, 'i');
+        const match = trimmedLine.match(regex);
+        if (match) {
           isStepHeader = true;
-          console.log(`  -> STAP gevonden: ${trimmedLine}`);
+          console.log(`  -> SCHRITT gevonden: ${trimmedLine}`);
+          // Normaliseer naar standaard format voor parser
+          const description = trimmedLine.replace(regex, '').trim();
+          outputLines.push(`${keyword.toUpperCase()} ${match[1]}: ${description}`);
           break;
         }
       }
-    }
-    
-    // BELANGRIJK: Behoud originele indentatie waar mogelijk
-    if (line.startsWith('\t') || line.startsWith('    ')) {
-      // Deze regel is al ingesprongen - behoud zoals het is
-      outputLines.push(line);
-      console.log(`  -> Behoud ingesprongen regel: [${line}]`);
-    } else if (isStepHeader) {
-      // Step header - geen indentatie
-      outputLines.push(trimmedLine);
-    } else if (trimmedLine === '') {
-      // Lege regel - behouden voor structuur
-      outputLines.push('');
-    } else {
-      // Andere content - voeg toe zoals het is
-      outputLines.push(line);
+      
+      // Als het geen step header is, behoud originele regel
+      if (!isStepHeader) {
+        outputLines.push(line);
+        console.log(`  -> Behoud originele regel: [${line}]`);
+      }
     }
   }
   
@@ -123,8 +126,9 @@ export async function parseWordDocument(file, syntaxRules) {
       // Converteer de content naar het juiste format
       const standardwerkContent = convertToStandaardwerkFormat(currentProgram.rawContent, syntaxRules);
       
-      // Parse met de volledige parseStandaardwerk functie
-      const fullParseResult = parseStandaardwerk(standardwerkContent, syntaxRules);
+      // Parse met de volledige StandardWorkParser
+      const parser = new StandardWorkParser(syntaxRules);
+      const fullParseResult = parser.parse(standardwerkContent);
       
       console.log(`📊 Parse result for ${currentProgram.name}:`, {
         steps: fullParseResult.steps.length,

@@ -22,12 +22,26 @@ NIET Noodstop_ingedrukt`;
 export const defaultSyntaxRules = {
   stepKeywords: {
     rest: ['RUST', 'RUHE', 'IDLE'],
-    step: ['STAP', 'SCHRITT', 'STEP']
+    step: ['STAP', 'SCHRITT', 'STEP'],
+    end: ['KLAAR', 'FERTIG', 'END']
   },
   variableDetection: {
-    timerKeywords: ['tijd', 'timer', 'dt', 'delay', 't#', 'ton', 'tof'],
-    markerKeywords: ['status', 'actief', 'vrijgave', 'enable', 'start', 'stop', 'ready', 'hulp'],
-    storingKeywords: ['storing', 'fault', 'error', 'alarm', 'melding']
+    timerKeywords: ['TIJD', 'TIME', 'ZEIT', 'timer', 'dt', 'delay', 't#', 'ton', 'tof'],
+    markerKeywords: ['MARKER', 'FLAG', 'MERKER', 'status', 'actief', 'vrijgave', 'enable', 'start', 'stop', 'ready', 'hulp'],
+    storingKeywords: ['STORING', 'FAULT', 'STÖRUNG', 'error', 'alarm', 'melding']
+  },
+  conditions: {
+    orPrefix: '+',
+    notPrefix: ['NIET', 'NICHT', 'NOT'],
+    transitionPrefix: '->',
+    assignmentOperators: ['=', '==', '!=', '<>', '>=', '<=', '>', '<'],
+    logicalOperators: ['EN', 'AND', 'UND', 'OF', 'OR', 'ODER']
+  },
+  format: {
+    requireColon: true,
+    allowSpaces: true,
+    allowParentheses: true,
+    preserveIndentation: true
   },
   // Nieuwe optie om stricte step detectie in te schakelen
   strictStepDetection: true
