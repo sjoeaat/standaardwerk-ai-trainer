@@ -175,8 +175,8 @@ export class UnifiedTextParser {
     for (let i = 0; i < lines.length; i++) {
       let line = lines[i];
       
-      // Check if this line contains embedded SCHRITT/STAP/STEP keywords
-      const schrittMatch = line.match(/^(.+?)\s+(SCHRITT|STAP|STEP)\s+(\d+)\s*[:.]?\s*(.*)$/i);
+      // Check if this line contains embedded SCHRITT/STAP/STEP keywords - VERBETERD: flexibeler
+      const schrittMatch = line.match(/^(.+?)\s+(SCHRITT|STAP|STEP)\s*(\d+)\s*[:\(\.]?\s*(.*)$/i);
       if (schrittMatch && !line.trim().startsWith('SCHRITT') && !line.trim().startsWith('STAP') && !line.trim().startsWith('STEP')) {
         // Split the line: before part + new line with SCHRITT
         const [, before, keyword, number, after] = schrittMatch;
@@ -185,8 +185,8 @@ export class UnifiedTextParser {
         continue;
       }
       
-      // Check if this line contains embedded RUST/RUHE/IDLE keywords  
-      const rustMatch = line.match(/^(.+?)\s+(RUST|RUHE|IDLE)\s*[:.]?\s*(.*)$/i);
+      // Check if this line contains embedded RUST/RUHE/IDLE keywords - VERBETERD: flexibeler
+      const rustMatch = line.match(/^(.+?)\s+(RUST|RUHE|IDLE)\s*[:\(\.]?\s*(.*)$/i);
       if (rustMatch && !line.trim().startsWith('RUST') && !line.trim().startsWith('RUHE') && !line.trim().startsWith('IDLE')) {
         // Split the line: before part + new line with RUST
         const [, before, keyword, after] = rustMatch;
@@ -201,10 +201,10 @@ export class UnifiedTextParser {
     
     // Rejoin and apply final normalization
     return normalizedLines.join('\n')
-      // Normalize RUST/RUHE/IDLE - make more flexible
-      .replace(/^\s*(RUST|RUHE|IDLE)\s*[:.]?\s*/gmi, (match, keyword) => `${keyword.toUpperCase()}: `)
-      // Normalize SCHRITT/STAP/STEP - handle various formats
-      .replace(/^\s*(SCHRITT|STAP|STEP)\s*[-.]?\s*(\d+)\s*[:.]?\s*/gmi, (match, keyword, number) => 
+      // Normalize RUST/RUHE/IDLE - VERBETERD: nog flexibeler
+      .replace(/^\s*(RUST|RUHE|IDLE)\s*[:\(\.]?\s*/gmi, (match, keyword) => `${keyword.toUpperCase()}: `)
+      // Normalize SCHRITT/STAP/STEP - VERBETERD: handle various formats inclusief haakjes
+      .replace(/^\s*(SCHRITT|STAP|STEP)\s*[-.\(\s]*(\d+)\s*[:.\)]*\s*/gmi, (match, keyword, number) => 
         `${keyword.toUpperCase()} ${number}: `)
       // Handle step without number (default to 1)
       .replace(/^\s*(SCHRITT|STAP|STEP)\s*[:.](?!\s*\d)/gmi, (match, keyword) => 

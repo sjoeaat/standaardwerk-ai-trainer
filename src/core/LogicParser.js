@@ -149,11 +149,19 @@ export class LogicParser {
 
   tryParseStep(line, lineNumber, currentStep, pendingConditions) {
     const trimmedLine = line.trim();
+    // VERBETERD: Flexibelere regex die verschillende Duitse formaten accepteert
+    // Ondersteunt: RUHE:, RUHE(, RUHE , SCHRITT 1, SCHRITT 1:, SCHRITT1, etc.
     const stepPattern = new RegExp(
-      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s+(\\d+))?:\\s*(.*)$`, 
+      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s*(\\d+))?\\s*[:\\(\\s]?\\s*(.*)$`, 
       'i'
     );
     const stepMatch = trimmedLine.match(stepPattern);
+    
+    // Debug logging voor step matching
+    console.log(`🔍 Step parsing: "${trimmedLine}" -> ${stepMatch ? 'MATCH' : 'NO MATCH'}`);
+    if (stepMatch) {
+      console.log(`  ✅ Keyword: "${stepMatch[1]}", Number: "${stepMatch[2]}", Description: "${stepMatch[3]}"`);
+    }
 
     if (stepMatch) {
       // Finaliseer vorige stap
