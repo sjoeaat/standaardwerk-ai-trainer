@@ -79,6 +79,14 @@ export class AdvancedParser extends FlexibleParser {
       crossReferences: new Map(),
       entities: new Map()
     };
+    
+    // TIA Portal standard variables
+    this.tiaStandardVariables = [
+      { name: 'Stap', datatype: 'Array[0..31] of Bool', description: 'Step status bits' },
+      { name: 'Hulp', datatype: 'Array[1..32] of Bool', description: 'Helper bits' },
+      { name: 'Tijd', datatype: 'Array[1..10] of IEC_TIMER', description: 'Timer array' },
+      { name: 'Teller', datatype: 'Array[1..10] of Int', description: 'Counter array' }
+    ];
   }
 
   /**
@@ -199,6 +207,12 @@ export class AdvancedParser extends FlexibleParser {
 
     // Build program hierarchy
     enhanced.programHierarchy = this.buildProgramHierarchy(enhanced);
+    
+    // Add TIA Portal standard variables
+    enhanced.tiaStandardVariables = this.tiaStandardVariables;
+    
+    // Post-process to ensure TIA Portal compatibility
+    this.postProcessForTiaPortal(enhanced);
 
     return enhanced;
   }
@@ -571,6 +585,84 @@ export class AdvancedParser extends FlexibleParser {
     });
 
     return hierarchy;
+  }
+
+  /**
+   * Post-process results for TIA Portal compatibility
+   */
+  postProcessForTiaPortal(enhanced) {
+    // 1. Convert RUHE to SCHRITT 0
+    enhanced.steps.forEach(step => {
+      if (step.type === 'RUHE') {
+        step.type = 'SCHRITT';
+        step.number = 0;
+        step.originalType = 'RUHE';
+      }
+    });
+    
+    // 2. Sort steps by number to ensure proper sequence
+    enhanced.steps.sort((a, b) => a.number - b.number);
+    
+    // 3. Add step descriptions as comments
+    enhanced.steps.forEach(step => {
+      if (step.description && step.description.trim()) {
+        enhanced.comments.push({
+          type: 'comment',
+          subtype: 'step_description',
+          content: step.description,
+          stepNumber: step.number,
+          lineNumber: step.lineNumber,
+          originalText: `${step.type} ${step.number}: ${step.description}`
+        });
+      }
+    });
+    
+    // 4. Add TIA standard variables to the variables array
+    this.tiaStandardVariables.forEach(tiaVar => {
+      enhanced.variables.push({
+        name: tiaVar.name,
+        type: tiaVar.datatype,
+        group: 'tia_standard',
+        description: tiaVar.description,
+        isStandard: true,
+        lineNumber: 0 // System-generated
+      });
+    });
+    
+    // 5. Ensure proper step numbering sequence
+    this.validateStepSequence(enhanced);
+  }
+
+  /**
+   * Validate and fix step sequence
+   */
+  validateStepSequence(enhanced) {
+    const stepNumbers = enhanced.steps.map(s => s.number).sort((a, b) => a - b);
+    const expectedSequence = Array.from({length: stepNumbers.length}, (_, i) => i);
+    
+    // Check if we have the expected sequence (0, 1, 2, 3, ...)
+    let hasValidSequence = true;
+    for (let i = 0; i < stepNumbers.length; i++) {
+      if (stepNumbers[i] !== expectedSequence[i]) {
+        hasValidSequence = false;
+        break;
+      }
+    }
+    
+    if (!hasValidSequence) {
+      console.log('⚠️  Step sequence validation: Non-sequential step numbers detected');
+      console.log(`   Expected: ${expectedSequence.join(', ')}`);
+      console.log(`   Actual: ${stepNumbers.join(', ')}`);
+    }
+    
+    // Add sequence validation to results
+    enhanced.stepSequenceValidation = {
+      isValid: hasValidSequence,
+      expected: expectedSequence,
+      actual: stepNumbers,
+      gaps: expectedSequence.filter(expected => !stepNumbers.includes(expected)),
+      duplicates: stepNumbers.filter((num, index) => stepNumbers.indexOf(num) !== index)
+    };
   }
 
   /**
