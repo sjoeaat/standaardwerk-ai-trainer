@@ -51,12 +51,15 @@ export class LogicParser {
         return;
       }
       if (this.tryParseStep(line, lineNumber, currentStep, pendingConditions)) {
+        // KRITIEKE FIX: currentStep moet direct na step parsing worden bijgewerkt
+        // zodat volgende conditions bij de juiste stap horen
         currentStep = this.getLastStep();
         pendingConditions = [];
         return;
       }
       
-      // Parse voorwaarden
+      // Parse voorwaarden - Deze horen bij de HUIDIGE stap (die net is aangemaakt)
+      // NIET bij de vorige stap die in currentStep stond voor de step parsing
       this.tryParseCondition(line, lineNumber, currentStep, currentVariableDefinition, pendingConditions);
     });
 
@@ -195,6 +198,11 @@ export class LogicParser {
     const isOr = conditionText.startsWith('+ ');
     if (isOr) {
       conditionText = conditionText.substring(2).trim();
+    }
+
+    // Debug logging voor condition assignment
+    if (currentStep) {
+      console.log(`🔗 Assigning condition "${conditionText}" to step ${currentStep.type} ${currentStep.number} (line ${lineNumber})`);
     }
 
     const isNegated = /^(NIET|NOT|NICHT)\s+/i.test(conditionText);
