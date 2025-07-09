@@ -11,6 +11,7 @@ import { join, dirname, basename, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { UnifiedTextParser } from './src/core/UnifiedTextParser.js';
 import { EnhancedParser } from './src/core/EnhancedParser.js';
+import { FlexibleParser } from './src/core/FlexibleParser.js';
 import { defaultSyntaxRules } from './src/config/syntaxRules.js';
 import { DEFAULT_VALIDATION_RULES } from './src/config/validationRules.js';
 import { DocxParser } from './src/core/DocxParser.js';
@@ -32,7 +33,7 @@ const defaultOptions = {
   input: null,
   output: 'training-data.json',
   format: 'suggestions', // or 'structured'
-  parser: 'enhanced' // or 'unified'
+  parser: 'flexible' // enhanced, flexible, or unified
 };
 
 // Merge options
@@ -42,11 +43,14 @@ const config = { ...defaultOptions, ...options };
  * DOCX to JSON Converter
  */
 class DocxToJsonConverter {
-  constructor(parserType = 'enhanced') {
+  constructor(parserType = 'flexible') {
     this.docxParser = new DocxParser();
     
     // Choose parser based on type
-    if (parserType === 'enhanced') {
+    if (parserType === 'flexible') {
+      this.parser = new FlexibleParser(defaultSyntaxRules, DEFAULT_VALIDATION_RULES);
+      console.log('🎯 Using FlexibleParser (EnhancedParser with relaxed validation)');
+    } else if (parserType === 'enhanced') {
       this.parser = new EnhancedParser(defaultSyntaxRules, DEFAULT_VALIDATION_RULES);
       console.log('🎯 Using EnhancedParser (rule-based with training support)');
     } else {
@@ -365,7 +369,7 @@ function printUsage() {
   console.log('  --input <file>       Input DOCX file (required)');
   console.log('  --output <file>      Output JSON file (default: training-data.json)');
   console.log('  --format <format>    Output format: suggestions|structured (default: suggestions)');
-  console.log('  --parser <type>      Parser type: enhanced|unified (default: enhanced)');
+  console.log('  --parser <type>      Parser type: flexible|enhanced|unified (default: flexible)');
   console.log('  --help, -h          Show this help message');
   console.log('');
   console.log('Examples:');

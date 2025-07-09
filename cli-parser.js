@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync, existsSync, lstatSync, readdirSync, mkdirS
 import { join, dirname, basename, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { UnifiedTextParser } from './src/core/UnifiedTextParser.js';
+import { FlexibleParser } from './src/core/FlexibleParser.js';
 import { defaultSyntaxRules } from './src/config/syntaxRules.js';
 import { DEFAULT_VALIDATION_RULES } from './src/config/validationRules.js';
 import { DocxParser } from './src/core/DocxParser.js';
@@ -25,7 +26,7 @@ class CLIParser {
   constructor() {
     this.syntaxRules = defaultSyntaxRules;
     this.validationRules = DEFAULT_VALIDATION_RULES;
-    this.parser = new UnifiedTextParser(this.syntaxRules, this.validationRules);
+    this.parser = new FlexibleParser(this.syntaxRules, this.validationRules);
     this.processedFiles = [];
     this.trainingData = [];
     this.pendingSuggestions = [];

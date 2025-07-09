@@ -224,8 +224,8 @@ export const DEFAULT_VALIDATION_RULES = {
       /\([^)]+\s+(SCHRITT|STAP|STEP)\s+([0-9+]+)\)/
     ],
     validation: {
-      requiresProgramExists: true,
-      requiresStepsExist: true,
+      requiresProgramExists: false, // Disable strict program validation
+      requiresStepsExist: false,    // Disable strict step validation
       allowsMultipleSteps: true,
       separator: "+"
     }
