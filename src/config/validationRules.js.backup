@@ -6,8 +6,8 @@
 // =====================================================================
 
 export const DEFAULT_VALIDATION_RULES = {
-  version: "1.1.0",
-  lastUpdated: "2025-07-09",
+  version: "1.0.0",
+  lastUpdated: "2025-07-08",
   
   groups: {
     hulpmerker: {
@@ -16,11 +16,10 @@ export const DEFAULT_VALIDATION_RULES = {
       patterns: [
         /^[a-zA-Z][a-zA-Z0-9_]*\s*=\s*$/,
         /^[^:]+\s*=\s*$/,  // Any text without colon followed by =
-        // Auto-learned patterns from training v2 (optimized)
+        // Auto-learned patterns from training
         /^([^=]+)\s*=$/,
         /^(Freigabe|Start|Aktuell|Aktuelle)\s+(.+)\s*=$/,
-        /^(Einfuhr|Ausfuhr|Füllen|Entleeren|Umschwimmen|Freigabe)\s+(.+)\s*=$/,
-        /^(Wartereihe|Beschäftigt|Gestartet|Fertig|Aktiv)\s+(.+)\s*=$/
+        /^(Einfuhr|Ausfuhr|Füllen|Entleeren|Umschwimmen|Freigabe)\s+(.+)\s*=$/
       ],
       excludePatterns: [
         /^STORING:/,

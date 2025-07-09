@@ -18,7 +18,7 @@ export const defaultSyntaxRules = {
         requireColon: true,
         allowSpaces: true
     },
-    // Auto-learned patterns from training v2 (optimized)
+    // Auto-learned patterns from training
     stepPatterns: [
         {
             pattern: /^(\w+)\s+(\d+)\s*:\s*(.*)$/,
@@ -38,16 +38,6 @@ export const defaultSyntaxRules = {
                 "3.3\tO0x: Status Formenlagern  FB304\t13",
                 "3.4\tO01: Status Formenlager  FB306\t14"
             ]
-        },
-        {
-            pattern: /^(\d+\.?\d*\.?\d*)\s*([A-Z]\d*[x]?)\s*:\s*(.+?)(?:\s+FB\d+)?\s*\t?\d*$/,
-            description: "Enhanced FB-reference pattern with optional FB number",
-            confidence: 0.85,
-            examples: [
-                "3.2.1\tN10: Blockierung Einfuhrrinne FB130\t27",
-                "3.2.2\tN11: Blockierung Einfuhrrinne FB132\t28",
-                "3.2.3\tT10: Füllen Horde  FB134\t29"
-            ]
         }
     ],
     conditionPatterns: [
@@ -58,7 +48,7 @@ export const defaultSyntaxRules = {
             description: "Auto-learned cross-reference pattern"
         }
     ],
-    // Enhanced variable detection patterns (optimized v2)
+    // Enhanced variable detection patterns
     variablePatterns: [
         {
             pattern: /^([^=]+)\s*=$/,
@@ -71,12 +61,6 @@ export const defaultSyntaxRules = {
             group: "hulpmerker",
             confidence: 0.85,
             description: "Auto-learned control variable pattern"
-        },
-        {
-            pattern: /^(Einfuhr|Ausfuhr|Füllen|Entleeren|Umschwimmen|Freigabe)\s+(.+)\s*=$/,
-            group: "hulpmerker",
-            confidence: 0.82,
-            description: "Auto-learned process control variable pattern"
         }
     ]
 };
