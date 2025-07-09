@@ -129,6 +129,42 @@ export class LogicParser {
     return false;
   }
 
+  /**
+   * Detecteert of een regel een voorwaarde is met programma-verwijzingen
+   * Voorkomt dat verwijzingen naar andere programma's worden herkend als stappen
+   */
+  isConditionWithProgramReference(line) {
+    // Patterns die duiden op programma-verwijzingen binnen voorwaarden:
+    // - "NICHT aktiv (T10: Positionieren Einfuhrwagen) RUHE"
+    // - "Gestartet (T10: Positionieren Einfuhrwagen NICHT RUHE)"
+    // - "Fertig (T10: Positionieren Einfuhrwagen RUHE)"
+    
+    // Check voor parentheses met programma-verwijzingen
+    const programReferencePattern = /\([^)]*:\s*[^)]*\)/;
+    if (programReferencePattern.test(line)) {
+      return true;
+    }
+    
+    // Check voor step keywords die NIET aan het begin staan
+    const stepKeywords = [
+      ...this.syntaxRules.stepKeywords.rest,
+      ...this.syntaxRules.stepKeywords.step
+    ];
+    
+    for (const keyword of stepKeywords) {
+      const keywordIndex = line.toLowerCase().indexOf(keyword.toLowerCase());
+      if (keywordIndex > 0) { // Niet aan het begin
+        // Check of het keyword voorkomt in een context van een voorwaarde
+        const beforeKeyword = line.substring(0, keywordIndex).trim();
+        if (beforeKeyword.length > 0 && !beforeKeyword.endsWith(':')) {
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  }
+
   tryParseVariable(line, lineNumber, currentVariableDefinition, pendingConditions) {
     const variableMatch = line.match(/^([A-Za-z][A-Za-z0-9_]*)\s*=/);
     const isIndented = /^\s/.test(line);
@@ -152,10 +188,17 @@ export class LogicParser {
 
   tryParseStep(line, lineNumber, currentStep, pendingConditions) {
     const trimmedLine = line.trim();
-    // VERBETERD: Flexibelere regex die verschillende Duitse formaten accepteert
-    // Ondersteunt: RUHE:, RUHE(, RUHE , SCHRITT 1, SCHRITT 1:, SCHRITT1, etc.
+    
+    // KRITIEKE FIX: Voorkom dat verwijzingen naar andere programma's worden herkend als stappen
+    // Check eerst of de regel een condition is die verwijzingen bevat
+    if (this.isConditionWithProgramReference(trimmedLine)) {
+      return false;
+    }
+    
+    // VERBETERD: Strengere regex die alleen echte stap-definities accepteert
+    // Moet beginnen met step keyword gevolgd door : of nummer:
     const stepPattern = new RegExp(
-      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s*(\\d+))?\\s*[:\\(\\s]?\\s*(.*)$`, 
+      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s*(\\d+))?\\s*[:]\\s*(.*)$`, 
       'i'
     );
     const stepMatch = trimmedLine.match(stepPattern);
