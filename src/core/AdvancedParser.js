@@ -10,6 +10,7 @@
 // =====================================================================
 
 import { FlexibleParser } from './FlexibleParser.js';
+import { ContentPreprocessor } from './ContentPreprocessor.js';
 
 /**
  * Advanced Parser for complex industrial program structures
@@ -18,13 +19,17 @@ export class AdvancedParser extends FlexibleParser {
   constructor(syntaxRules = {}, validationRules = {}) {
     super(syntaxRules, validationRules);
     
+    // Initialize content preprocessor
+    this.preprocessor = new ContentPreprocessor();
+    
     // Enhanced patterns for advanced parsing
     this.advancedPatterns = {
       // FB program headers
       fbProgram: /^(Hauptprogramm|Unterprogramm|Programm)\s+([A-Za-z0-9_\s]+)\s+(FB\d+)$/i,
       
-      // Variable assignments (simple and complex)
-      simpleAssignment: /^([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]+)\)\s*=\s*(.+)$/,
+      // Variable assignments (simple and complex) - improved patterns
+      simpleAssignment: /^([A-Za-z_][A-Za-z0-9_\s]*)\s*\(([^)]+)\)\s*=\s*(.+)$/,
+      generalAssignment: /^([A-Za-z_][A-Za-z0-9_\s]+)\s*=\s*(.+)$/,
       complexAssignment: /^([A-Za-z_][A-Za-z0-9_]*)\[([^\]]+)\]\.([A-Za-z_][A-Za-z0-9_]*)\[([^\]]+)\]\.([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$/,
       matrixAssignment: /^([A-Za-z_][A-Za-z0-9_]*)\[([^\]]+)\]\.([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$/,
       
@@ -38,19 +43,33 @@ export class AdvancedParser extends FlexibleParser {
       fbStepReference: /^(.+?)\s*\(([A-Za-z0-9_\s]+)\s+(FB\d+)\s+(SCHRITT|STAP|STEP)\s+([0-9+]+)\)\s*$/i,
       standardizedReference: /^(.+?)\s*\(([A-Za-z0-9_\s]+)\s+(SCHRITT|STAP|STEP)\s+([0-9+]+)\)\s*$/i,
       
-      // Compound conditions
+      // Transition rules (fixed patterns)
+      transitionRule: /^\+\s*von\s+SCHRITT\s+(\d+)/i,
+      jumpRule: /^\+\s*nach\s+SCHRITT\s+(\d+)/i,
+      
+      // Compound conditions and OR-blocks (improved patterns)
       orBlockStart: /^\s*\[\s*$/,
       orBlockEnd: /^\s*\]\s*$/,
-      orBlockItem: /^\s*([A-Za-z_][A-Za-z0-9_\s]*)\s*\+?\s*$/,
+      orBlockItem: /^\+?\s*(.+?)\s*$/,
       
       // Entity types
       käseZähler: /^(Käsezähler|Cheese Counter)\s+([A-Za-z0-9_\s]+)\s*(.*)$/i,
-      störung: /^(Störung|Fault|Error)\s*[:.]?\s*(.+)$/i,
+      störung: /^(NICHT\s+)?(Störung|Fault|Error)\s*[:.]?\s*(.+)$/i,
       freigabe: /^(Freigabe|Release|Enable)\s+(.+)$/i,
       
-      // Comparisons and evaluations
-      comparison: /^(.+?)\s*([<>=!]+)\s*(.+)$/,
-      evaluation: /^(.+?)\s*(ist|is|==)\s*(.+)$/i
+      // Comparisons and evaluations (improved patterns)
+      comparison: /^(.+?)\s*([<>=!]+|==|!=|<=|>=)\s*(.+)$/,
+      evaluation: /^(.+?)\s*(ist|is)\s+(.+)$/i,
+      
+      // Logical operators
+      logicalAnd: /^(.+?)\s+(&|UND|AND)\s+(.+)$/i,
+      logicalOr: /^(.+?)\s+(ODER|OR)\s+(.+)$/i,
+      
+      // Time patterns
+      timePattern: /^Zeit\s+(\d+)\s*(sek|min|sec|seconds?|minutes?)\s*\?\?$/i,
+      
+      // Negation patterns
+      negationPattern: /^(NICHT|NOT)\s+(.+)$/i
     };
     
     // Program structure tracking
@@ -66,11 +85,17 @@ export class AdvancedParser extends FlexibleParser {
    * Parse text with advanced structure detection
    */
   parseText(text, options = {}) {
-    // First, run the base FlexibleParser
-    const baseResult = super.parseText(text, options);
+    // Step 1: Preprocess the content to fix common issues
+    const preprocessedText = this.preprocessor.preprocess(text);
     
-    // Then enhance with advanced parsing
-    const enhancedResult = this.enhanceWithAdvancedParsing(text, baseResult);
+    // Step 2: Run the base FlexibleParser on preprocessed text
+    const baseResult = super.parseText(preprocessedText, options);
+    
+    // Step 3: Enhance with advanced parsing
+    const enhancedResult = this.enhanceWithAdvancedParsing(preprocessedText, baseResult);
+    
+    // Step 4: Add preprocessing statistics
+    enhancedResult.preprocessingStats = this.preprocessor.getPreprocessingStats(text, preprocessedText);
     
     return enhancedResult;
   }
@@ -153,7 +178,14 @@ export class AdvancedParser extends FlexibleParser {
         return;
       }
 
-      // 7. Enhance existing conditions with compound logic
+      // 7. Detect transition rules
+      const transitionMatch = this.detectTransitionRule(trimmed, index + 1);
+      if (transitionMatch) {
+        enhanced.compoundConditions.push(transitionMatch);
+        return;
+      }
+
+      // 8. Enhance existing conditions with compound logic
       const conditionMatch = this.enhanceCondition(trimmed, index + 1, baseResult);
       if (conditionMatch) {
         enhanced.compoundConditions.push(conditionMatch);
@@ -237,6 +269,23 @@ export class AdvancedParser extends FlexibleParser {
         type: 'simple_assignment',
         name: name.trim(),
         description: description.trim(),
+        value: value.trim(),
+        lineNumber,
+        originalText: text
+      };
+    }
+
+    // Try general assignment (Variable Name = Value)
+    match = text.match(this.advancedPatterns.generalAssignment);
+    if (match) {
+      const [, name, value] = match;
+      // Skip if this looks like a step or condition
+      if (name.match(/^(SCHRITT|STAP|STEP|RUHE|RUST|IDLE)/i)) {
+        return null;
+      }
+      return {
+        type: 'general_assignment',
+        name: name.trim(),
         value: value.trim(),
         lineNumber,
         originalText: text
@@ -415,6 +464,39 @@ export class AdvancedParser extends FlexibleParser {
         type: 'entity',
         entityType: 'freigabe',
         description: match[2].trim(),
+        lineNumber,
+        originalText: text
+      };
+    }
+
+    return null;
+  }
+
+  /**
+   * Detect transition rules (+ von SCHRITT X, + nach SCHRITT X)
+   */
+  detectTransitionRule(text, lineNumber) {
+    // Check for transition rule (+ von SCHRITT X)
+    let match = text.match(this.advancedPatterns.transitionRule);
+    if (match) {
+      const [, stepNumber] = match;
+      return {
+        type: 'transition_rule',
+        subtype: 'von',
+        targetStep: parseInt(stepNumber),
+        lineNumber,
+        originalText: text
+      };
+    }
+
+    // Check for jump rule (+ nach SCHRITT X)
+    match = text.match(this.advancedPatterns.jumpRule);
+    if (match) {
+      const [, stepNumber] = match;
+      return {
+        type: 'transition_rule',
+        subtype: 'nach',
+        targetStep: parseInt(stepNumber),
         lineNumber,
         originalText: text
       };
