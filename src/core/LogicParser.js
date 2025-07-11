@@ -195,10 +195,10 @@ export class LogicParser {
       return false;
     }
     
-    // VERBETERD: Strengere regex die alleen echte stap-definities accepteert
-    // Moet beginnen met step keyword gevolgd door : of nummer:
+    // ENHANCED: Support both parentheses and colon formats for real-world documents
+    // Must start with step keyword followed by : or () or number:
     const stepPattern = new RegExp(
-      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s*(\\d+))?\\s*[:]\\s*(.*)$`, 
+      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s*(\\d+))?\\s*[:\\(]\\s*(.+?)\\)?$`, 
       'i'
     );
     const stepMatch = trimmedLine.match(stepPattern);

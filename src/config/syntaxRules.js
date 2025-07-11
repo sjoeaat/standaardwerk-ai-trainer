@@ -4,6 +4,20 @@ export const defaultSyntaxRules = {
         rest: ['RUST', 'RUHE', 'IDLE'],
         end: ['KLAAR', 'FERTIG', 'END']
     },
+    // Real-world patterns from actual Word documents
+    realWorldPatterns: {
+        // SCHRITT 1 (description) - parentheses format
+        schrittParentheses: /^(SCHRITT|STAP|STEP)\s+(\d+)\s+\((.+)\)$/i,
+        // RUHE (description) - parentheses format
+        ruheParentheses: /^(RUST|RUHE|IDLE)\s+\((.+)\)$/i,
+        // SCHRITT 1: description - colon format (legacy)
+        schrittColon: /^(SCHRITT|STAP|STEP)\s+(\d+)\s*:\s*(.+)$/i,
+        // RUHE: description - colon format (legacy)
+        ruheColon: /^(RUST|RUHE|IDLE)\s*:\s*(.+)$/i,
+        // Mixed format support
+        schrittMixed: /^(SCHRITT|STAP|STEP)\s+(\d+)\s*[:\(]\s*(.+?)\)?$/i,
+        ruheMixed: /^(RUST|RUHE|IDLE)\s*[:\(]\s*(.+?)\)?$/i
+    },
     variableDetection: {
         timerKeywords: ['TIJD', 'TIME', 'ZEIT'],
         markerKeywords: ['MARKER', 'FLAG', 'MERKER'],
@@ -18,8 +32,46 @@ export const defaultSyntaxRules = {
         requireColon: true,
         allowSpaces: true
     },
-    // Auto-learned patterns from training v2 (optimized)
+    // Real-world patterns from actual Word documents (V2.0 - Enhanced)
     stepPatterns: [
+        {
+            pattern: /^(SCHRITT|STAP|STEP)\s+(\d+)\s+\((.+)\)$/i,
+            description: "Real-world Word format: SCHRITT 1 (description)",
+            confidence: 0.95,
+            examples: [
+                "SCHRITT 1 (Start Entleeren Formenlager)",
+                "SCHRITT 2 (Prüfung Formenlager leer)",
+                "SCHRITT 3 (Freigabe Füllen Formenlager)"
+            ]
+        },
+        {
+            pattern: /^(RUST|RUHE|IDLE)\s+\((.+)\)$/i,
+            description: "Real-world Word format: RUHE (description)",
+            confidence: 0.95,
+            examples: [
+                "RUHE (Warten auf Startbedingungen)",
+                "RUHE (Bereit für nächsten Zyklus)",
+                "RUHE (Störung behoben)"
+            ]
+        },
+        {
+            pattern: /^(SCHRITT|STAP|STEP)\s+(\d+)\s*:\s*(.+)$/i,
+            description: "Legacy colon format: SCHRITT 1: description",
+            confidence: 0.85,
+            examples: [
+                "SCHRITT 1: Start Entleeren Formenlager",
+                "SCHRITT 2: Prüfung Formenlager leer"
+            ]
+        },
+        {
+            pattern: /^(RUST|RUHE|IDLE)\s*:\s*(.+)$/i,
+            description: "Legacy colon format: RUHE: description",
+            confidence: 0.85,
+            examples: [
+                "RUHE: Warten auf Startbedingungen",
+                "RUHE: Bereit für nächsten Zyklus"
+            ]
+        },
         {
             pattern: /^(\w+)\s+(\d+)\s*:\s*(.*)$/,
             description: "Auto-learned from 6269 examples - enhanced step detection",

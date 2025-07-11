@@ -37,8 +37,11 @@ export class UnifiedTextParser {
     // Step 3: Apply consistent validation
     const validated = this.applyValidation(parsed);
     
-    // Step 4: Add parsing metadata
-    validated.parsingMetadata = {
+    // Step 4: Transform to expected output format
+    const transformed = this.transformToExpectedFormat(validated);
+    
+    // Step 5: Add parsing metadata
+    transformed.parsingMetadata = {
       source,
       timestamp: new Date().toISOString(),
       version: '1.0.0',
@@ -46,7 +49,7 @@ export class UnifiedTextParser {
       originalLineCount: text.split('\\n').length
     };
     
-    return validated;
+    return transformed;
   }
 
   /**

@@ -109,9 +109,9 @@ export class EnhancedLogicParser extends LogicParser {
       return true;
     }
 
-    // Check for step declarations
+    // Check for step declarations - support both parentheses and colon formats
     const stepPattern = new RegExp(
-      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s+(\\d+))?:\\s*(.*)$`, 
+      `^(${this.syntaxRules.stepKeywords.rest.join('|')}|${this.syntaxRules.stepKeywords.step.join('|')})(?:\\s+(\\d+))?\\s*[:\\(]\\s*(.+?)\\)?$`, 
       'i'
     );
     const stepMatch = trimmedLine.match(stepPattern);

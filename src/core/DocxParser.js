@@ -41,14 +41,14 @@ export class DocxParser {
       const htmlResult = await mammoth.convertToHtml({ buffer });
       
       // Extract structured content with formatting
-      const structuredContent = this.extractStructuredContent(htmlResult.html, textResult.value);
+      const structuredContent = this.extractStructuredContent(htmlResult.value, textResult.value);
       
       // Convert to normalized text with preserved formatting markers
       const normalizedText = this.convertToNormalizedText(structuredContent);
       
       return {
         rawText: textResult.value,
-        html: htmlResult.html,
+        html: htmlResult.value,
         structuredContent: structuredContent,
         normalizedText: normalizedText,
         metadata: {
@@ -79,102 +79,116 @@ export class DocxParser {
       return this.extractStructuredContentFromRawText(rawText);
     }
 
-    // Parse HTML to extract structure
-    const htmlLines = html.split('\n');
+    // Fixed HTML parsing - use regex to extract all tags directly from HTML
     let currentSection = null;
     let currentTable = null;
     let currentList = null;
     let lineNumber = 0;
 
-    htmlLines.forEach(line => {
-      lineNumber++;
-      const trimmed = line.trim();
-      
-      if (!trimmed) return;
-
-      // Headers
-      const headerMatch = trimmed.match(/^<h(\d)>(.*?)<\/h\d>$/);
-      if (headerMatch) {
-        const level = parseInt(headerMatch[1]);
-        const text = this.cleanHtmlText(headerMatch[2]);
-        
-        currentSection = {
-          level,
-          title: text,
-          content: [],
-          lineNumber,
-          formatting: { type: 'header', level }
-        };
-        content.sections.push(currentSection);
-        return;
-      }
-
-      // Paragraphs with formatting
-      const paragraphMatch = trimmed.match(/^<p>(.*?)<\/p>$/);
-      if (paragraphMatch) {
-        const text = this.cleanHtmlText(paragraphMatch[1]);
-        const formatting = this.extractFormatting(paragraphMatch[1]);
-        
-        const paragraph = {
-          text,
-          formatting,
-          lineNumber,
-          indentLevel: this.calculateIndentLevel(paragraphMatch[1])
-        };
-
-        if (currentSection) {
-          currentSection.content.push(paragraph);
-        } else {
-          content.formattedElements.push(paragraph);
+    // Extract headers using regex
+    const headerMatches = html.match(/<h(\d)[^>]*>(.*?)<\/h\d>/gs);
+    if (headerMatches) {
+      headerMatches.forEach(match => {
+        const headerMatch = match.match(/<h(\d)[^>]*>(.*?)<\/h\d>/s);
+        if (headerMatch) {
+          const level = parseInt(headerMatch[1]);
+          const text = this.cleanHtmlText(headerMatch[2]);
+          
+          currentSection = {
+            level,
+            title: text,
+            content: [],
+            lineNumber: ++lineNumber,
+            formatting: { type: 'header', level }
+          };
+          content.sections.push(currentSection);
         }
-        return;
-      }
+      });
+    }
 
-      // Tables
-      if (trimmed.includes('<table>')) {
+    // Extract paragraphs using regex
+    const pTags = html.match(/<p[^>]*>(.*?)<\/p>/gs);
+    if (pTags) {
+      pTags.forEach(tag => {
+        const paragraphMatch = tag.match(/<p[^>]*>(.*?)<\/p>/s);
+        if (paragraphMatch) {
+          const text = this.cleanHtmlText(paragraphMatch[1]);
+          const formatting = this.extractFormatting(paragraphMatch[1]);
+          
+          if (text.length > 0) {
+            const paragraph = {
+              text,
+              formatting,
+              lineNumber: ++lineNumber,
+              indentLevel: this.calculateIndentLevel(paragraphMatch[1])
+            };
+
+            if (currentSection) {
+              currentSection.content.push(paragraph);
+            } else {
+              content.formattedElements.push(paragraph);
+            }
+          }
+        }
+      });
+    }
+
+    // Extract tables using regex
+    const tableMatches = html.match(/<table[^>]*>(.*?)<\/table>/gs);
+    if (tableMatches) {
+      tableMatches.forEach(tableHtml => {
         currentTable = {
           rows: [],
-          lineNumber,
+          lineNumber: ++lineNumber,
           formatting: { type: 'table' }
         };
         content.tables.push(currentTable);
-        return;
-      }
 
-      if (trimmed.includes('<tr>') && currentTable) {
-        const cells = this.extractTableCells(trimmed);
-        currentTable.rows.push({
-          cells,
-          lineNumber,
-          isHeader: trimmed.includes('<th>')
-        });
-        return;
-      }
+        const rowMatches = tableHtml.match(/<tr[^>]*>(.*?)<\/tr>/gs);
+        if (rowMatches) {
+          rowMatches.forEach(rowHtml => {
+            const cells = this.extractTableCells(rowHtml);
+            currentTable.rows.push({
+              cells,
+              lineNumber: ++lineNumber,
+              isHeader: rowHtml.includes('<th')
+            });
+          });
+        }
+      });
+    }
 
-      // Lists
-      if (trimmed.includes('<ul>') || trimmed.includes('<ol>')) {
+    // Extract lists using regex
+    const listMatches = html.match(/<(ul|ol)[^>]*>(.*?)<\/\1>/gs);
+    if (listMatches) {
+      listMatches.forEach(listHtml => {
+        const isOrdered = listHtml.startsWith('<ol');
         currentList = {
-          type: trimmed.includes('<ul>') ? 'unordered' : 'ordered',
+          type: isOrdered ? 'ordered' : 'unordered',
           items: [],
-          lineNumber,
+          lineNumber: ++lineNumber,
           formatting: { type: 'list' }
         };
         content.lists.push(currentList);
-        return;
-      }
 
-      if (trimmed.includes('<li>') && currentList) {
-        const text = this.cleanHtmlText(trimmed.match(/<li>(.*?)<\/li>/)?.[1] || '');
-        const formatting = this.extractFormatting(trimmed);
-        
-        currentList.items.push({
-          text,
-          formatting,
-          lineNumber,
-          indentLevel: this.calculateIndentLevel(trimmed)
-        });
-      }
-    });
+        const itemMatches = listHtml.match(/<li[^>]*>(.*?)<\/li>/gs);
+        if (itemMatches) {
+          itemMatches.forEach(itemHtml => {
+            const text = this.cleanHtmlText(itemHtml.match(/<li[^>]*>(.*?)<\/li>/s)?.[1] || '');
+            const formatting = this.extractFormatting(itemHtml);
+            
+            if (text.length > 0) {
+              currentList.items.push({
+                text,
+                formatting,
+                lineNumber: ++lineNumber,
+                indentLevel: this.calculateIndentLevel(itemHtml)
+              });
+            }
+          });
+        }
+      });
+    }
 
     return content;
   }

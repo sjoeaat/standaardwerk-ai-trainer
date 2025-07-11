@@ -114,11 +114,13 @@ export class HierarchicalParser {
   }
 
   isRustDeclaration(content) {
-    return /^(RUST|RUHE|IDLE)\s*:\s*.+$/i.test(content);
+    // Support both parentheses and colon formats
+    return /^(RUST|RUHE|IDLE)\s*[:\(]\s*.+[\)]*$/i.test(content);
   }
 
   isSchrittDeclaration(content) {
-    return /^(SCHRITT|STAP|STEP)\s+\d+\s*:\s*.+$/i.test(content);
+    // Support both parentheses and colon formats
+    return /^(SCHRITT|STAP|STEP)\s+\d+\s*[:\(]\s*.+[\)]*$/i.test(content);
   }
 
   isVonSchrittDeclaration(content) {
@@ -330,7 +332,14 @@ export class HierarchicalParser {
    * Extract step description from content
    */
   extractDescription(content) {
-    const match = content.match(/^(RUST|RUHE|IDLE|SCHRITT|STAP|STEP)(?:\s+\d+)?\s*:\s*(.+)$/i);
+    // Try parentheses format first
+    let match = content.match(/^(RUST|RUHE|IDLE|SCHRITT|STAP|STEP)(?:\s+\d+)?\s*\((.+)\)$/i);
+    if (match) {
+      return match[2].trim();
+    }
+    
+    // Fall back to colon format
+    match = content.match(/^(RUST|RUHE|IDLE|SCHRITT|STAP|STEP)(?:\s+\d+)?\s*:\s*(.+)$/i);
     return match ? match[2].trim() : content;
   }
 
@@ -338,6 +347,7 @@ export class HierarchicalParser {
    * Extract step number from content
    */
   extractStepNumber(content) {
+    // Support both parentheses and colon formats
     const match = content.match(/^(SCHRITT|STAP|STEP)\s+(\d+)/i);
     return match ? parseInt(match[2]) : 1;
   }

@@ -7,6 +7,7 @@
 
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { PersistentPatternStorage } from './PersistentPatternStorage.js';
 
 /**
  * Automatic Training System for iterative syntax rule improvement
@@ -19,12 +20,19 @@ export class AutoTrainer {
       minConfidence: options.minConfidence || 0.8,
       convergenceThreshold: options.convergenceThreshold || 0.05,
       backupOriginalRules: options.backupOriginalRules !== false,
+      persistentStorage: options.persistentStorage !== false,
       ...options
     };
     
     this.trainingHistory = [];
     this.currentIteration = 0;
     this.converged = false;
+    
+    // Initialize persistent storage
+    if (this.options.persistentStorage) {
+      this.patternStorage = new PersistentPatternStorage('./pattern-storage');
+      console.log('💾 Persistent pattern storage initialized');
+    }
   }
 
   /**
@@ -91,6 +99,11 @@ export class AutoTrainer {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     
+    // Save patterns to persistent storage
+    if (this.patternStorage) {
+      await this.savePatternsToStorage(outputDir);
+    }
+    
     // Generate final training report
     const finalReport = await this.generateTrainingReport(outputDir);
     console.log(`📋 Training completed. Final report: ${finalReport}`);
@@ -100,7 +113,8 @@ export class AutoTrainer {
       converged: this.converged,
       finalMetrics: previousMetrics,
       trainingHistory: this.trainingHistory,
-      reportPath: finalReport
+      reportPath: finalReport,
+      persistentPatternsPath: this.patternStorage?.storagePath
     };
   }
 
@@ -250,7 +264,10 @@ export class AutoTrainer {
     
     for (const suggestion of suggestions) {
       if (this.shouldApplySuggestion(suggestion)) {
-        console.log(`🔧 Applying suggestion: ${suggestion.suggestedGroup} - ${suggestion.originalLine.substring(0, 50)}...`);
+        const displayText = suggestion.originalLine ? 
+          suggestion.originalLine.substring(0, 50) : 
+          'Unknown pattern';
+        console.log(`🔧 Applying suggestion: ${suggestion.suggestedGroup} - ${displayText}...`);
         
         // Apply suggestion based on type
         if (suggestion.suggestedGroup === 'schritt') {
@@ -504,6 +521,80 @@ export class AutoTrainer {
     }
     
     return recommendations;
+  }
+
+  /**
+   * Save patterns to persistent storage
+   */
+  async savePatternsToStorage(outputDir) {
+    console.log('💾 Saving patterns to persistent storage...');
+    
+    // Collect all patterns from training history
+    const allPatterns = {
+      stepPatterns: [],
+      conditionPatterns: [],
+      variablePatterns: [],
+      crossReferencePatterns: [],
+      zeitPatterns: [],
+      technicalStatusPatterns: [],
+      industrialPatterns: []
+    };
+    
+    // Extract patterns from suggestions
+    this.trainingHistory.forEach(iteration => {
+      iteration.suggestions.forEach(suggestion => {
+        const pattern = {
+          pattern: suggestion.suggestedRegex?.replace(/\//g, ''),
+          description: `Auto-learned from training (confidence: ${suggestion.confidence})`,
+          confidence: suggestion.confidence,
+          frequency: suggestion.frequency || 1,
+          examples: suggestion.examples || [suggestion.originalLine]
+        };
+        
+        const category = this.mapSuggestionToCategory(suggestion.suggestedGroup);
+        if (category && allPatterns[category]) {
+          allPatterns[category].push(pattern);
+        }
+      });
+    });
+    
+    // Add patterns to storage
+    const finalMetrics = this.trainingHistory[this.trainingHistory.length - 1]?.metrics;
+    const result = this.patternStorage.addPatternsFromTraining(allPatterns, finalMetrics);
+    
+    console.log(`💾 Persistent storage updated: ${result.totalAdded} added, ${result.totalMerged} merged`);
+    
+    // Export optimized syntax rules
+    const exportedRules = this.patternStorage.exportForSyntaxRules();
+    const exportPath = join(outputDir, 'optimized-syntax-rules-persistent.json');
+    writeFileSync(exportPath, JSON.stringify(exportedRules, null, 2));
+    
+    console.log(`💾 Exported optimized rules to ${exportPath}`);
+  }
+  
+  /**
+   * Map suggestion group to pattern category
+   */
+  mapSuggestionToCategory(suggestedGroup) {
+    const mapping = {
+      'schritt': 'stepPatterns',
+      'condition': 'conditionPatterns',
+      'variable': 'variablePatterns',
+      'hulpmerker': 'variablePatterns',
+      'cross_reference': 'crossReferencePatterns',
+      'zeit': 'zeitPatterns',
+      'technical': 'technicalStatusPatterns',
+      'industrial': 'industrialPatterns'
+    };
+    return mapping[suggestedGroup];
+  }
+  
+  /**
+   * Get pattern statistics from storage
+   */
+  getPatternStatistics() {
+    if (!this.patternStorage) return null;
+    return this.patternStorage.getStatistics();
   }
 
   /**

@@ -1,0 +1,31 @@
+{
+  "summary": {
+    "totalFiles": 1,
+    "totalSteps": 284,
+    "totalVariables": 0,
+    "totalErrors": 0,
+    "totalWarnings": 0,
+    "unknownPatterns": 3336,
+    "processingTime": 987
+  },
+  "files": [
+    {
+      "filename": "Programmbeschreibung_Salzbad_5_V0.0.02.docx",
+      "metrics": {
+        "steps": 284,
+        "variables": 0,
+        "errors": 0,
+        "warnings": 0
+      }
+    }
+  ],
+  "distributions": {
+    "stepTypes": {
+      "RUST": 0,
+      "SCHRITT": 255,
+      "RUHE": 29
+    },
+    "variableTypes": {},
+    "errorTypes": {}
+  }
+}

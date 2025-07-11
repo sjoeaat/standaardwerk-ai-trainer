@@ -1,0 +1,19 @@
+CLI Parser Log - 2025-07-11T21:18:28.706Z
+==================================================
+
+FILES PROCESSED: 1
+TOTAL STEPS: 284
+TOTAL VARIABLES: 0
+ERRORS: 0
+WARNINGS: 0
+UNKNOWN PATTERNS: 3336
+PROCESSING TIME: 987ms
+
+FILE DETAILS:
+------------------------------
+Programmbeschreibung_Salzbad_5_V0.0.02.docx:
+  Steps: 284
+  Variables: 0
+  Errors: 0
+  Warnings: 0
+

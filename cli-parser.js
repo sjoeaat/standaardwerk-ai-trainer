@@ -17,6 +17,7 @@ import { defaultSyntaxRules } from './src/config/syntaxRules.js';
 import { DEFAULT_VALIDATION_RULES } from './src/config/validationRules.js';
 import { DocxParser } from './src/core/DocxParser.js';
 import { AutoTrainer } from './src/core/AutoTrainer.js';
+import { IntelligentConditionParser } from './src/core/IntelligentConditionParser.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -40,6 +41,7 @@ class CLIParser {
     this.processedFiles = [];
     this.trainingData = [];
     this.pendingSuggestions = [];
+    this.intelligentParser = new IntelligentConditionParser();
     this.metrics = {
       totalFiles: 0,
       totalSteps: 0,
@@ -47,6 +49,7 @@ class CLIParser {
       totalErrors: 0,
       totalWarnings: 0,
       unknownPatterns: 0,
+      categorizedPatterns: 0,
       processingTime: 0
     };
   }
@@ -144,16 +147,66 @@ class CLIParser {
       throw new Error(`File not found: ${filePath}`);
     }
 
-    // Read file content (now handles both DOCX and text)
-    const fileData = await this.readFileContent(filePath);
-    const source = this.determineSource(filePath);
+    const ext = extname(filePath).toLowerCase();
+    let result;
+    let fileData;
     
-    // Parse with unified parser
-    const result = this.parser.parse(fileData.content, source, {
-      filename: basename(filePath),
-      filepath: filePath,
-      ...fileData.metadata
-    });
+    if (ext === '.docx') {
+      // ENHANCED: Use DocxParser directly for Word documents
+      console.log('📄 Processing DOCX file with formatting preservation...');
+      const docxParser = new DocxParser();
+      const docxResult = await docxParser.parseDocxFile(filePath);
+      const trainingFormat = docxParser.convertToTrainingFormat(docxResult);
+      
+      // Convert DocxParser result to expected format
+      result = {
+        steps: trainingFormat.stepProgram.steps.map(step => ({
+          type: step.text.startsWith('RUHE') ? 'RUST' : 'SCHRITT',
+          number: step.text.startsWith('RUHE') ? 0 : this.extractStepNumber(step.text),
+          description: this.extractStepDescription(step.text),
+          conditions: [],
+          lineNumber: step.lineNumber,
+          originalText: step.text
+        })),
+        variables: trainingFormat.stepProgram.variables.map(variable => ({
+          name: this.extractVariableName(variable.text),
+          value: this.extractVariableValue(variable.text),
+          group: 'hulpmerker',
+          lineNumber: variable.lineNumber,
+          originalText: variable.text
+        })),
+        errors: [],
+        warnings: [],
+        crossReferences: [],
+        metadata: {
+          source: 'docx',
+          filename: basename(filePath),
+          extractedSteps: trainingFormat.stepProgram.steps.length,
+          extractedVariables: trainingFormat.stepProgram.variables.length,
+          extractedConditions: trainingFormat.stepProgram.conditions.length
+        }
+      };
+      
+      fileData = {
+        content: docxResult.normalizedText,
+        metadata: {
+          source: 'docx',
+          structuredContent: docxResult.structuredContent,
+          rawText: docxResult.rawText,
+          html: docxResult.html
+        }
+      };
+    } else {
+      // For text files, use regular parsing
+      fileData = await this.readFileContent(filePath);
+      const source = this.determineSource(filePath);
+      
+      result = this.parser.parse(fileData.content, source, {
+        filename: basename(filePath),
+        filepath: filePath,
+        ...fileData.metadata
+      });
+    }
 
     // Update metrics
     this.updateMetrics(result);
@@ -233,18 +286,99 @@ class CLIParser {
   }
 
   /**
+   * Extract step number from text
+   */
+  extractStepNumber(text) {
+    const match = text.match(/SCHRITT\s+(\d+)/i);
+    return match ? parseInt(match[1]) : 0;
+  }
+  
+  /**
+   * Extract step description from text
+   */
+  extractStepDescription(text) {
+    // Try parentheses format first
+    let match = text.match(/(?:SCHRITT\s+\d+|RUHE)\s*\(([^)]+)\)/i);
+    if (match) {
+      return match[1].trim();
+    }
+    
+    // Fall back to colon format
+    match = text.match(/(?:SCHRITT\s+\d+|RUHE)\s*:\s*(.+)/i);
+    return match ? match[1].trim() : text;
+  }
+  
+  /**
+   * Extract variable name from text
+   */
+  extractVariableName(text) {
+    const match = text.match(/^([^=]+)\s*=/);  
+    return match ? match[1].trim() : text;
+  }
+  
+  /**
+   * Extract variable value from text
+   */
+  extractVariableValue(text) {
+    const match = text.match(/=\s*(.+)$/);  
+    return match ? match[1].trim() : '';
+  }
+
+  /**
+   * Generate suggestion for categorized pattern
+   */
+  generateCategorizedSuggestion(pattern, category) {
+    return {
+      originalLine: pattern.text,
+      lineNumber: pattern.originalPattern?.lineNumber || 0,
+      analysis: {
+        hasNumbers: /\d+/.test(pattern.text),
+        hasColon: pattern.text.includes(':'),
+        hasEquals: pattern.text.includes('='),
+        hasParentheses: pattern.text.includes('('),
+        hasKeywords: /SCHRITT|RUHE|RUST|STAP|STEP|IDLE/i.test(pattern.text),
+        potentialType: category,
+        categorizedBy: 'IntelligentConditionParser'
+      },
+      suggestedRegex: this.generateRegexForCategory(pattern, category),
+      suggestedGroup: category,
+      confidence: pattern.confidence || 0.8,
+      reasoning: [`Intelligently categorized as ${category}`]
+    };
+  }
+  
+  /**
+   * Generate regex for categorized pattern
+   */
+  generateRegexForCategory(pattern, category) {
+    const categoryRegex = {
+      'crossReferences': '/\\([^)]+\\s+(SCHRITT|STAP|STEP)\\s+[0-9+&-]+\\)/',
+      'conditions': '/^[\\+\\-\\s]*[^()]+$/',
+      'zeitPatterns': '/\\d+\\s*sek/',
+      'technicalStatus': '/^[A-Z]\\d+[x]?\\s*:/',
+      'variableAssignments': '/^[A-Za-z][^=]*\\s*=\\s*[^=]+$/',
+      'industrialPatterns': '/^(Start|Stop|Freigabe|Störung)\\s+[A-Z]/',
+      'numberingPatterns': '/^\\d+\\.\\d+/',
+      'arrayPatterns': '/\\[[^\\]]+\\]/',
+      'booleanPatterns': '/\\s+(UND|ODER|&|\\|)\\s+/',
+      'numericPatterns': '/\\d+[<>=!]|[<>=!]\\d+/'
+    };
+    return categoryRegex[category] || '/.*/';
+  }
+
+  /**
    * Update metrics
    */
   updateMetrics(result) {
     this.metrics.totalFiles++;
-    this.metrics.totalSteps += result.steps.length;
-    this.metrics.totalVariables += result.variables.length;
-    this.metrics.totalErrors += result.errors.length;
-    this.metrics.totalWarnings += result.warnings.length;
+    this.metrics.totalSteps += result.steps?.length || 0;
+    this.metrics.totalVariables += result.variables?.length || 0;
+    this.metrics.totalErrors += result.errors?.length || 0;
+    this.metrics.totalWarnings += result.warnings?.length || 0;
   }
 
   /**
-   * Analyze unknown patterns for training
+   * Analyze unknown patterns for training with intelligent categorization
    */
   async analyzeUnknownPatterns(result, originalContent) {
     const lines = originalContent.split('\n');
@@ -273,6 +407,8 @@ class CLIParser {
         unknownLines.push({
           lineNumber,
           content,
+          text: content,
+          originalLine: content,
           analysis: this.analyzeUnknownLine(content)
         });
       }
@@ -280,10 +416,43 @@ class CLIParser {
 
     if (unknownLines.length > 0) {
       console.log(`🔍 Found ${unknownLines.length} unknown patterns`);
-      this.metrics.unknownPatterns += unknownLines.length;
       
-      // Generate suggestions
-      for (const unknownLine of unknownLines) {
+      // Use intelligent condition parser to categorize patterns
+      const categorized = this.intelligentParser.parseUnknownPatterns(unknownLines);
+      const stats = this.intelligentParser.generateStatistics(categorized);
+      
+      console.log(`📊 Intelligent categorization results:`);
+      console.log(`  - Cross-references: ${categorized.crossReferences.length}`);
+      console.log(`  - Conditions: ${categorized.conditions.length}`);
+      console.log(`  - Zeit patterns: ${categorized.zeitPatterns.length}`);
+      console.log(`  - Technical status: ${categorized.technicalStatus.length}`);
+      console.log(`  - Variable assignments: ${categorized.variableAssignments.length}`);
+      console.log(`  - Industrial patterns: ${categorized.industrialPatterns.length}`);
+      console.log(`  - Unrecognized: ${categorized.unrecognized.length}`);
+      console.log(`  - Reduction: ${stats.reductionPercentage.toFixed(1)}%`);
+      
+      // Update metrics
+      this.metrics.unknownPatterns += categorized.unrecognized.length;
+      this.metrics.categorizedPatterns += stats.categorizedPatterns;
+      
+      // Generate suggestions for categorized patterns
+      Object.entries(categorized).forEach(([category, patterns]) => {
+        if (category !== 'unrecognized' && patterns.length > 0) {
+          patterns.forEach(pattern => {
+            const suggestion = this.generateCategorizedSuggestion(pattern, category);
+            if (suggestion) {
+              this.pendingSuggestions.push(suggestion);
+            }
+          });
+        }
+      });
+      
+      // Generate suggestions for remaining unrecognized patterns
+      for (const unknownLine of categorized.unrecognized) {
+        // Add analysis if missing
+        if (!unknownLine.analysis) {
+          unknownLine.analysis = this.analyzeUnknownLine(unknownLine.text || unknownLine.content);
+        }
         const suggestion = await this.generateSyntaxSuggestion(unknownLine);
         if (suggestion) {
           this.pendingSuggestions.push(suggestion);
