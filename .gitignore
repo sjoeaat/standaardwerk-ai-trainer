@@ -57,6 +57,13 @@ debug-*.js
 *.bak
 *~
 
+# Development artifacts
+archive-structure/
+github-analysis/
+trainer-structure/
+webapp-structure/
+new-structure/
+
 # OS generated files
 .DS_Store
 .DS_Store?
