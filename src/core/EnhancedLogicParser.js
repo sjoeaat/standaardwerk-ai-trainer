@@ -41,6 +41,7 @@ export class EnhancedLogicParser extends LogicParser {
     lines.forEach((line, index) => {
       const lineNumber = index + 1;
       const trimmedLine = line.trim();
+      const hasIndentation = line.startsWith('\t') || line.startsWith('    ');
 
       if (!trimmedLine) {
         this.handleEmptyLine(pendingConditions, currentVariableDefinition);
@@ -50,19 +51,51 @@ export class EnhancedLogicParser extends LogicParser {
       // Parse verschillende regel types
       if (this.tryParseHeader(line, lineNumber)) return;
       if (this.tryParseSymbolik(line, lineNumber)) return;
+      
+      // CRITICAL FIX: Check for indented SCHRITT/RUST lines FIRST
+      if (hasIndentation && this.isStepLine(trimmedLine)) {
+        console.log(`🎯 About to parse step. Current pending conditions: ${pendingConditions.length}`);
+        pendingConditions.forEach((c, i) => {
+          console.log(`  [${i}]: ${c.text}`);
+        });
+      }
+      
+      if (hasIndentation && this.tryParseStep(line, lineNumber, currentStep, pendingConditions)) {
+        // Apply pending conditions to the NEW step we just parsed
+        const newStep = this.getLastStep();
+        console.log(`📊 Step parsed. Pending conditions: ${pendingConditions.length}`);
+        if (newStep && pendingConditions.length > 0) {
+          console.log(`✅ Applying ${pendingConditions.length} pending conditions to ${newStep.type} ${newStep.number}`);
+          // Create copy of conditions before they get cleared
+          const conditionsCopy = pendingConditions.map(c => ({...c}));
+          newStep.entryConditions = [{
+            group: 'AND',
+            conditions: conditionsCopy
+          }];
+        } else if (newStep) {
+          console.log(`ℹ️  No pending conditions for ${newStep.type} ${newStep.number}`);
+        }
+        // ALWAYS clear pending conditions after a step
+        pendingConditions.length = 0; // Clear array but keep reference
+        currentStep = newStep;
+        return;
+      }
+      
       if (this.tryParseVariable(line, lineNumber, currentVariableDefinition, pendingConditions)) {
         currentVariableDefinition = this.getLastVariableDefinition();
         pendingConditions = [];
         return;
       }
-      if (this.tryParseStep(line, lineNumber, currentStep, pendingConditions)) {
-        currentStep = this.getLastStep();
-        pendingConditions = [];
-        return;
-      }
       
-      // Parse voorwaarden
-      this.tryParseCondition(line, lineNumber, currentStep, currentVariableDefinition, pendingConditions);
+      // Parse voorwaarden (lines without indentation are conditions for NEXT step)
+      if (!hasIndentation && !this.isStepLine(trimmedLine)) {
+        console.log(`📝 Found condition (no indent) on line ${lineNumber}: "${trimmedLine}"`);
+        const condition = this.parseConditionLine(trimmedLine, lineNumber);
+        if (condition) {
+          pendingConditions.push(condition);
+          console.log(`📋 Added to pending conditions. Total: ${pendingConditions.length}`);
+        }
+      }
     });
 
     // Finaliseer laatste variabele definitie
@@ -78,6 +111,43 @@ export class EnhancedLogicParser extends LogicParser {
     this.calculateStatistics();
 
     return this.result;
+  }
+
+  /**
+   * Check if line contains step keywords
+   */
+  isStepLine(line) {
+    const stepKeywords = [
+      ...this.syntaxRules.stepKeywords.step,
+      ...this.syntaxRules.stepKeywords.rest,
+      ...this.syntaxRules.stepKeywords.end
+    ];
+    const lowerLine = line.toLowerCase();
+    return stepKeywords.some(keyword => lowerLine.includes(keyword.toLowerCase()));
+  }
+
+  /**
+   * Parse a condition line into condition object
+   */
+  parseConditionLine(line, lineNumber) {
+    let conditionText = line.trim();
+    const isOr = conditionText.startsWith('+ ');
+    if (isOr) {
+      conditionText = conditionText.substring(2).trim();
+    }
+
+    const isNegated = /^(NIET|NOT|NICHT)\s+/i.test(conditionText);
+    if (isNegated) {
+      conditionText = conditionText.replace(/^(NIET|NOT|NICHT)\s+/i, '').trim();
+    }
+
+    return {
+      text: conditionText,
+      originalLine: line,
+      negated: isNegated,
+      operator: isOr ? 'OR' : 'AND',
+      lineNumber
+    };
   }
 
   /**
@@ -126,8 +196,9 @@ export class EnhancedLogicParser extends LogicParser {
     if (stepMatch) {
       console.log(`✅ Successfully parsed step: ${stepMatch[1]} ${stepMatch[2] || ''} - ${stepMatch[3] || ''}`);
       
-      // Finaliseer vorige stap met zijn conditions
-      this.finalizeCurrentStep(currentStep, pendingConditions);
+      // CRITICAL FIX: Don't finalize with pending conditions - they're for THIS step!
+      // The pending conditions are ENTRY conditions for the NEW step we're creating
+      this.finalizeCurrentStepWithoutConditions(currentStep);
 
       const type = this.syntaxRules.stepKeywords.rest.some(k =>
         k.toLowerCase() === stepMatch[1].toLowerCase()) ? 'RUST' : 'SCHRITT';
@@ -338,6 +409,14 @@ export class EnhancedLogicParser extends LogicParser {
         conditions: [...pendingConditions]
       }];
       pendingConditions.length = 0;
+    }
+  }
+
+  finalizeCurrentStepWithoutConditions(currentStep) {
+    // Just finalize the step without touching pending conditions
+    // Pending conditions will be used for the NEXT step as entry conditions
+    if (currentStep) {
+      console.log(`🏁 Finalizing step ${currentStep.type} ${currentStep.number} without clearing conditions`);
     }
   }
 

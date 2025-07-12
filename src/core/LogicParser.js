@@ -235,7 +235,8 @@ export class LogicParser {
   }
 
   tryParseCondition(line, lineNumber, currentStep, currentVariableDefinition, pendingConditions) {
-    if (!currentStep && !currentVariableDefinition) return false;
+    // FIXED: Allow conditions to be collected even without current step (they're for NEXT step)
+    if (!currentStep && !currentVariableDefinition && !pendingConditions) return false;
 
     let conditionText = line.trim();
     const isOr = conditionText.startsWith('+ ');
@@ -246,6 +247,8 @@ export class LogicParser {
     // Debug logging voor condition assignment
     if (currentStep) {
       console.log(`🔗 Assigning condition "${conditionText}" to step ${currentStep.type} ${currentStep.number} (line ${lineNumber})`);
+    } else if (pendingConditions !== undefined) {
+      console.log(`📋 Collecting pending condition "${conditionText}" for next step (line ${lineNumber})`);
     }
 
     const isNegated = /^(NIET|NOT|NICHT)\s+/i.test(conditionText);
@@ -291,6 +294,10 @@ export class LogicParser {
       this.extractVariablesFromCondition(condition, currentStep);
     } else if (currentVariableDefinition) {
       pendingConditions.push(condition);
+    } else if (pendingConditions) {
+      // FIXED: Collect conditions for the NEXT step
+      pendingConditions.push(condition);
+      console.log(`✅ Added to pending conditions. Total pending: ${pendingConditions.length}`);
     }
 
     return true;

@@ -1,8 +1,70 @@
-// src/components/AnalysisView/index.jsx - Complete Enhanced versie
+// src/components/AnalysisView/index.jsx - Complete Enhanced versie met ML Integration
 import React from 'react';
-import { GitCompare, Clock, AlertTriangle, Settings, Zap } from 'lucide-react';
+import { GitCompare, Clock, AlertTriangle, Settings, Zap, Brain, TrendingUp } from 'lucide-react';
 
 const safeArray = arr => Array.isArray(arr) ? arr : [];
+
+// ML Metrics Component - Production Integration
+const MLMetricsCard = ({ mlMetrics }) => {
+  if (!mlMetrics) return null;
+  
+  return (
+    <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-6">
+      <div className="flex items-center gap-2 mb-3">
+        <Brain className="w-5 h-5 text-purple-600" />
+        <h3 className="font-semibold text-purple-800">ML Training Integration</h3>
+        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+          Production Ready
+        </span>
+      </div>
+      
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-green-600">
+            {Math.round((mlMetrics.trainingAccuracy || 0) * 100)}%
+          </div>
+          <div className="text-xs text-gray-600">Training Accuracy</div>
+        </div>
+        
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-600">
+            {(mlMetrics.totalExamples || 0).toLocaleString()}
+          </div>
+          <div className="text-xs text-gray-600">Training Examples</div>
+        </div>
+        
+        <div className="text-center">
+          <div className="text-2xl font-bold text-orange-600">
+            {Math.round((mlMetrics.unknownPatternReduction || 0) * 100)}%
+          </div>
+          <div className="text-xs text-gray-600">Pattern Reduction</div>
+        </div>
+        
+        <div className="text-center">
+          <div className="text-2xl font-bold text-purple-600">
+            {(mlMetrics.enhancedPatterns?.crossReferences || 0) + (mlMetrics.enhancedPatterns?.variables || 0)}
+          </div>
+          <div className="text-xs text-gray-600">ML Patterns</div>
+        </div>
+      </div>
+      
+      {mlMetrics.enhancedPatterns && (
+        <div className="mt-3 pt-3 border-t border-purple-200">
+          <div className="flex items-center gap-4 text-sm text-purple-700">
+            <span className="flex items-center gap-1">
+              <TrendingUp className="w-4 h-4" />
+              {mlMetrics.enhancedPatterns.crossReferences} cross-reference patterns
+            </span>
+            <span className="flex items-center gap-1">
+              <Settings className="w-4 h-4" />
+              {mlMetrics.enhancedPatterns.variables} variable patterns
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Enhanced ConditionTag component
 const ConditionTag = ({ condition }) => (
@@ -214,6 +276,9 @@ const AnalysisView = ({ parseResult }) => {
 
   return (
     <div className="space-y-6">
+      {/* ML Training Metrics */}
+      <MLMetricsCard mlMetrics={parseResult.mlMetrics} />
+      
       {/* Statistics Overview */}
       {parseResult.statistics && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">

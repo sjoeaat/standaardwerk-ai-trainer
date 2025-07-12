@@ -1,0 +1,72 @@
+# CORRECTE SYNTAX VOOR STANDAARDWERK
+# Voorwaarden staan BOVEN de stap, stap heeft TAB indentatie
+
+L01: Hoofdprogramma Doseerinstallatie FB500
+
+Symbool IDB: L01_Hoofdprogramma_Doseer
+
+# RUST staat ook met TAB net als andere stappen
+Start knop ingedrukt
+Veiligheidsdeuren gesloten
+Geen actieve storingen
+	RUST: Wachten op start signaal
+
+# Voorwaarden voor SCHRITT 1 (geen dash, geen tab)
+Doseerklep.Gesloten
+Tank.Niveau > 20%
+Pomp.Gereed
+	SCHRITT 1 (Initialiseren systeem)
+
+# Voorwaarden voor SCHRITT 2  
+Motor.Running
+TIJD T#5s
+(Vulsysteem SCHRITT 3+4+5)
+	SCHRITT 2 (Product doseren)
+
+# Deze structuur toont storing/melding BINNEN de stap (met tab)
+	STORING 23 = Doseerklep vastgelopen
+	Teller1 = 5
+	MELDING "Dosering actief"
+
+# Voorwaarden voor SCHRITT 3
+Doseerklep.Open
+NIET Niveausensor.Max
++ Tank.Leeg
++ Noodstop.Actief
+	SCHRITT 3 (Mengen product)
+	
+# Variabelen binnen de stap (met tab)
+	TIJD Mengtijd = T#2m30s
+	Marker1 = SCHRITT 2-4
+
+# Voorwaarden voor SCHRITT 4
+Mengmotor.Aan
+Temperatuur > 45.5
+Druk < 2.5
+	SCHRITT 4 (Kwaliteitscontrole)
+	
+# Variabelen binnen de stap
+	Viscositeit = OK
+	pH = 7.2 - 7.8
+	SETZEN Goedkeuring
+	RÜCKSETZEN Afkeur
+
+# Voorwaarden voor SCHRITT 5
+Afvoerklep = OPEN
+Tankniveau < 10%
++ Pompstoring
++ Overloopbeveiliging
+	SCHRITT 5 (Product afvoeren)
+
+# KLAAR heeft ook TAB indentatie
+RÜCKSETZEN alle kleppen
+Statusmelding = "Gereed voor nieuwe batch"
+	KLAAR: Process voltooid
+
+# SAMENVATTING VAN DE REGELS:
+# 1. Voorwaarden: GEEN tab, staan BOVEN de stap
+# 2. Stappen (RUST/SCHRITT/KLAAR): WEL tab indentatie
+# 3. Variabelen binnen stap: WEL tab indentatie
+# 4. GEEN dash (-) prefix voor voorwaarden
+# 5. OR voorwaarden: gebruik + prefix
+# 6. NOT voorwaarden: gebruik NIET/NOT/NICHT prefix

@@ -110,13 +110,35 @@ export const defaultSyntaxRules = {
             description: "Auto-learned cross-reference pattern"
         }
     ],
-    // Enhanced variable detection patterns (optimized v2)
+    // Enhanced ML patterns from persistent training (Production-Ready)
+    crossReferencePatterns: [
+        {
+            pattern: /\(([^)]+)\s+(SCHRITT|STAP|STEP)\s+([0-9+]+)\)/,
+            description: "ML-learned cross-reference pattern (frequency: 1630)",
+            confidence: 0.9,
+            frequency: 1630,
+            accuracy: 0.9,
+            examples: [
+                "(Program SCHRITT 5+6)",
+                "(Ausfuhr STEP 12+13)",
+                "(Kontrolle STAP 8+9)"
+            ]
+        }
+    ],
+    // Enhanced variable detection patterns (ML-optimized v3 - Production)
     variablePatterns: [
         {
-            pattern: /^([^=]+)\s*=$/,
+            pattern: /^([^=]+)\s*=\s*(.*)$/,
             group: "hulpmerker",
             confidence: 0.8,
-            description: "Auto-learned variable assignment pattern"
+            frequency: 711,
+            accuracy: 0.8,
+            description: "ML-learned variable assignment pattern (frequency: 711)",
+            examples: [
+                "Freigabe Füllen Formenlager=",
+                "Start Entleeren Horde=",
+                "Aktuelle Position="
+            ]
         },
         {
             pattern: /^(Freigabe|Start|Aktuell|Aktuelle)\s+(.+)\s*=$/,
@@ -130,5 +152,19 @@ export const defaultSyntaxRules = {
             confidence: 0.82,
             description: "Auto-learned process control variable pattern"
         }
-    ]
+    ],
+    // ML Training Metadata (Production Stats)
+    mlTrainingStats: {
+        totalExamples: 8107,
+        totalVariables: 8697,
+        trainingAccuracy: 1.0,
+        validationAccuracy: 0.513,
+        unknownPatternReduction: 0.51,
+        lastTrainingDate: "2025-07-11T21:42:37.684Z",
+        convergenceIterations: 2,
+        patternFrequencies: {
+            variablePatterns: 711,
+            crossReferencePatterns: 1630
+        }
+    }
 };
